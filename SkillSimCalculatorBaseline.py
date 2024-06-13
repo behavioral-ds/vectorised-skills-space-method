@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+from itertools import chain
 
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 from SkillSim import SkillSim
 from SkillGroup import SkillGroup
@@ -28,10 +29,10 @@ class Job:
 def get_job_population(skill_group: SkillGroup) -> list[Job]:
     job_population = []
 
-    for job_index in skill_group.matrix.shape[0]:
+    for job_index in range(skill_group.matrix.shape[0]):
         skills = []
 
-        for skill_index in skill_group.matrix.shape[1]:
+        for skill_index in range(skill_group.matrix.shape[1]):
             if skill_group.matrix[job_index][skill_index] == 1:
                 skills.append(skill_group.skill_names[skill_index])
 
@@ -91,47 +92,47 @@ class SkillSimCalculatorBaseline(SkillSim):
             else skill2_total_effective_use
         )
 
-    def skill_weight(self, skill: Skill, skill_set: set[Skill]) -> float:
+    def skill_weight(self, skill: Skill, skill_sets: list[Job]) -> float:
         total_rca = 0
 
-        for job in self.job_population:
-            if skill_set == job.skills:
-                total_rca += self.rca(skill, job)
+        for job in skill_sets:
+            total_rca += self.rca(skill, job)
 
-        return total_rca / len(self.job_population)
+        return total_rca / len(skill_sets)
 
     def skill_set_similiarity(
-        self, skill_set1: list[Skill], skill_set2: list[Skill]
+        self, skill_sets_1: list[Job], skill_sets_2: list[Job]
     ) -> float:
-        similarity_total = 0
-        skill_weight_total = 0
-        skill2_to_weight = (
-            {}
-        )  # memoise skill2 weights (skill1 weights will only be computed once)
+        pbar = tqdm(
+            total=len(
+                list(chain.from_iterable([list(job.skills) for job in skill_sets_1]))
+            )
+            * len(list(chain.from_iterable([list(job.skills) for job in skill_sets_2])))
+        )
 
-        pbar = tqdm(total=len(skill_set1) * len(skill_set2))
+        weighted_skills_coocurrence = 0
+        weighted_skills_total = 0
 
-        for skill1 in skill_set1:
-            for skill2 in skill_set2:
-                skill2_weight: float = None
+        for job1 in skill_sets_1:
+            for job1_skill in job1.skills:
+                job1_skill_weight = self.skill_weight(job1_skill, skill_sets_1)
 
-                if skill2 in skill2_to_weight:
-                    skill2_weight = skill2_to_weight[skill2]
-                else:
-                    skill2_weight = self.skill_weight(skill2, skill_set2)
-                    skill2_to_weight[skill2] = skill2_weight
+                for job2 in skill_sets_2:
+                    for job2_skill in job2.skills:
+                        job2_skill_weight = self.skill_weight(job1_skill, skill_sets_2)
+                        cooccurrence_val = self.skill_cooccurence(
+                            job1_skill, job2_skill
+                        )
 
-                skill_weight_product = (
-                    self.skill_weight(skill1, skill_set1) * skill2_weight
-                )
+                        weighted_skills = job1_skill_weight * job2_skill_weight
+                        weighted_skills_total += weighted_skills
 
-                similarity_total += skill_weight_product * self.skill_cooccurence(
-                    skill1, skill2
-                )
-                skill_weight_total += skill_weight_product
+                        weighted_skills_coocurrence += (
+                            weighted_skills * cooccurrence_val
+                        )
 
-                pbar.update(1)
+                        pbar.update(1)
 
         pbar.close()
 
-        return similarity_total / skill_weight_total
+        return weighted_skills_coocurrence / weighted_skills_total
