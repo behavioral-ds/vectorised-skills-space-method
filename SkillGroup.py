@@ -36,7 +36,7 @@ class SkillGroup:
         self.skill_group_names = []
         self.skill_names = []
 
-        for skill_group_name, skill_sets in skill_group_skills.values():
+        for skill_group_name, skill_sets in skill_group_skills.items():
             for skill_set in skill_sets:
                 has_skill = False
                 skill_vector = np.zeros(num_unique_skills)
