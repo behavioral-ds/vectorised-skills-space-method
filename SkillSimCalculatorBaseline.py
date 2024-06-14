@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from itertools import chain
+from typing import Any
 
+import numpy as np
 from tqdm import tqdm
 
 from SkillSim import SkillSim
@@ -28,14 +30,17 @@ class Job:
 
 def get_job_population(skill_group: SkillGroup) -> list[Job]:
     job_population = []
+    
+    num_jobs, num_skills = skill_group.matrix.shape
 
-    for job_index in range(skill_group.matrix.shape[0]):
+    for job_index in range(num_jobs):
         skills = []
 
-        for skill_index in range(skill_group.matrix.shape[1]):
+        for skill_index in range(num_skills):
             if skill_group.matrix[job_index][skill_index] == 1:
-                skills.append(skill_group.skill_names[skill_index])
+                skills.append(Skill(name=skill_group.skill_names[skill_index]))
 
+        # need to change skills to a set after fix
         job_population.append(
             Job(job_index, skill_group.skill_group_names[job_index], skills)
         )
@@ -45,9 +50,13 @@ def get_job_population(skill_group: SkillGroup) -> list[Job]:
 
 class SkillSimCalculatorBaseline(SkillSim):
     job_population: list[Job]
+    skills: list[Skill] | None
 
-    def __init__(self, job_population: list[Job]):
+    def __init__(self, job_population: list[Job], skills: list[str] | None = None):
         self.job_population = job_population
+        self.skills = (
+            [Skill(name=skill) for skill in skills] if skills is not None else None
+        )
 
     def rca(self, skill: Skill, job: Job) -> float:
         # RCA numerator
@@ -69,6 +78,8 @@ class SkillSimCalculatorBaseline(SkillSim):
                 if skill == current_skill:
                     num_jobs_with_skill += 1
 
+        # print("RCA:", is_skill_in_job, num_skills_in_job, num_skills_in_job, num_skills)
+
         return (is_skill_in_job / num_skills_in_job) / (
             num_jobs_with_skill / num_skills
         )
@@ -86,11 +97,32 @@ class SkillSimCalculatorBaseline(SkillSim):
             skill1_total_effective_use += is_skill1_effective
             skill2_total_effective_use += is_skill2_effective
 
+        if skill1_total_effective_use == 0 and skill2_total_effective_use == 0:
+            return 0
+
         return skill_pairwise_total / (
             skill1_total_effective_use
             if skill1_total_effective_use > skill2_total_effective_use
             else skill2_total_effective_use
         )
+
+    def cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
+        num_skills = len(self.skills)
+
+        cooccurence_matrix = np.zeros((num_skills, num_skills))
+
+        for row_index in range(num_skills):
+            for col_index in range(num_skills - row_index - 1):
+                col_index2 = col_index + row_index + 1
+
+                cooccurrence_val = self.skill_cooccurence(
+                    self.skills[row_index], self.skills[col_index2]
+                )
+
+                cooccurence_matrix[row_index][col_index2] = cooccurrence_val
+                cooccurence_matrix[col_index2][row_index] = cooccurrence_val
+
+        return cooccurence_matrix
 
     def skill_weight(self, skill: Skill, skill_sets: list[Job]) -> float:
         total_rca = 0
