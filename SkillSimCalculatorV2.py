@@ -1,5 +1,8 @@
+from multiprocessing import Pool, Process
+from typing import Any
+
 import numpy as np
-from tqdm.notebook import tqdm
+from tqdm import tqdm
 
 from SkillSim import SkillSim
 from SkillGroup import SkillGroup
@@ -24,19 +27,22 @@ class SkillSimCalculatorV2(SkillSim):
 
         # RCA denominator
         num_jobs_with_skill = np.sum(self.skill_group.matrix[:, skill_index])
-        num_skills = self.skill_group.matrix.shape[1]
+        num_skills = np.sum(self.skill_group.matrix)
+        
+        # print("RCA:", is_skill_in_job, num_skills_in_job, num_skills_in_job, num_skills)
 
         return (is_skill_in_job / num_skills_in_job) / (
             num_jobs_with_skill / num_skills
         )
 
-    def skill_cooccurence(self, skill1_index: int, skill2_index: int) -> float:
+    def rca_cooccurrence(self, skill1_index: int, skill2_index: int) -> float:
         """
-        Calculates the likelihood of two skills occuring in the same job ads.
+        Calculates the likelihood of two skills are "effectively" (i.e. have an advantage) in the same
+        skill groups (e.g. a job).
 
         Args:
-            skill1_index (int): the column/element index for a given skill (in the 2x2 matrix).
-            skill2_index (int): the column/element index for a given skill (in the 2x2 matrix).
+            skill1_index (int): the column/element index for a given skill (in the nxn matrix).
+            skill2_index (int): the column/element index for a given skill (in the nxn matrix).
 
         Returns:
             float: probability that skill1 and skill2 occur in the same job ads.
@@ -45,7 +51,7 @@ class SkillSimCalculatorV2(SkillSim):
         skill1_total_effective_use = 0
         skill2_total_effective_use = 0
 
-        for job_index in range(0, self.skill_group.matrix.shape[0]):
+        for job_index in range(self.skill_group.matrix.shape[0]):
             is_skill1_effective = 1 if self.rca(skill1_index, job_index) >= 1 else 0
             is_skill2_effective = 1 if self.rca(skill2_index, job_index) >= 1 else 0
 
@@ -53,11 +59,41 @@ class SkillSimCalculatorV2(SkillSim):
             skill1_total_effective_use += is_skill1_effective
             skill2_total_effective_use += is_skill2_effective
 
+        if skill1_total_effective_use == 0 and skill2_total_effective_use == 0:
+            return 0
+
         return skill_pairwise_total / (
             skill1_total_effective_use
             if skill1_total_effective_use > skill2_total_effective_use
             else skill2_total_effective_use
         )
+
+    def rca_cooccurrence_by_skill_pair(self, skill_pair_index):
+        return self.rca_cooccurrence(skill_pair_index[0], skill_pair_index[1])
+
+    def cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
+        skill_pair_indexes = []
+
+        num_skills = self.skill_group.matrix.shape[1]
+
+        for row_index in range(num_skills):
+            for col_index in range(num_skills - row_index - 1):
+                skill_pair_indexes.append([row_index, col_index + row_index + 1])
+
+        with Pool() as pool:
+            results = pool.imap(
+                self.rca_cooccurrence_by_skill_pair,
+                skill_pair_indexes,
+            )
+
+            cooccurrence_matrix = np.zeros((num_skills, num_skills))
+
+            for i, cooccurrence_val in enumerate(results):
+                [index1, index2] = skill_pair_indexes[i]
+                cooccurrence_matrix[index1][index2] = cooccurrence_val
+                cooccurrence_matrix[index2][index1] = cooccurrence_val
+
+            return cooccurrence_matrix
 
     def skill_weight(
         self, matrix_subset: MatrixSubsetIndexes, skill_index: int
@@ -109,9 +145,7 @@ class SkillSimCalculatorV2(SkillSim):
                 )
 
                 if cooccurrence_val_memo is None:
-                    cooccurrence_val = self.skill_cooccurence(
-                        skill1_index, skill2_index
-                    )
+                    cooccurrence_val = self.rca_cooccurrence(skill1_index, skill2_index)
 
                     cooccurence_vector.append(cooccurrence_val)
                     skills_to_cooccurrence_val.add_key_val_pair(
