@@ -28,13 +28,12 @@ class SkillGroup:
         for skill in removed_skills:
             del skill_frequency[skill]
 
-        population_skill_set = list(skill_frequency.keys())
+        self.skill_names = population_skill_set = list(skill_frequency.keys())
 
         num_unique_skills = len(population_skill_set)
 
         job_skill_matrix = []
         self.skill_group_names = []
-        self.skill_names = []
 
         for skill_group_name, skill_sets in skill_group_skills.items():
             for skill_set in skill_sets:
@@ -45,7 +44,6 @@ class SkillGroup:
                     if skill not in removed_skills:
                         has_skill = True
                         skill_vector[population_skill_set.index(skill)] = 1
-                        self.skill_names.append(skill)
 
                 if has_skill:
                     job_skill_matrix.append(skill_vector)
