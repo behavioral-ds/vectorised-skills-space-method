@@ -103,24 +103,6 @@ class SkillSimCalculatorBaseline(SkillSim):
             else skill2_total_effective_use
         )
 
-    def cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
-        num_skills = len(self.skills)
-
-        cooccurence_matrix = np.zeros((num_skills, num_skills))
-
-        for row_index in range(num_skills):
-            for col_index in range(num_skills - row_index - 1):
-                col_index2 = col_index + row_index + 1
-
-                cooccurrence_val = self.skill_cooccurence(
-                    self.skills[row_index], self.skills[col_index2]
-                )
-
-                cooccurence_matrix[row_index][col_index2] = cooccurrence_val
-                cooccurence_matrix[col_index2][row_index] = cooccurrence_val
-
-        return cooccurence_matrix
-
     def skill_weight(self, skill: Skill, jobs: list[Job]) -> float:
         total_rca = 0
 
