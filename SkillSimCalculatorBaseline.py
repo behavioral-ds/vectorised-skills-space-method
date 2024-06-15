@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from itertools import chain
-from typing import Any
 
-import numpy as np
 from tqdm import tqdm
 
 from SkillSim import SkillSim
