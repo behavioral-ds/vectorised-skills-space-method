@@ -28,8 +28,6 @@ class SkillSimCalculatorV2(SkillSim):
         # RCA denominator
         num_jobs_with_skill = np.sum(self.skill_group.matrix[:, skill_index])
         num_skills = np.sum(self.skill_group.matrix)
-        
-        # print("RCA:", is_skill_in_job, num_skills_in_job, num_skills_in_job, num_skills)
 
         return (is_skill_in_job / num_skills_in_job) / (
             num_jobs_with_skill / num_skills
@@ -71,12 +69,13 @@ class SkillSimCalculatorV2(SkillSim):
     def rca_cooccurrence_by_skill_pair(self, skill_pair_index):
         return self.rca_cooccurrence(skill_pair_index[0], skill_pair_index[1])
 
-    def cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
+    def cooccurrence_matrix(self, matrix_subset: MatrixSubsetIndexes | None = None) -> np.ndarray[Any, np.dtype[np.int8]]:
         skill_pair_indexes = []
 
         num_skills = self.skill_group.matrix.shape[1]
+        row_indexes = range(num_skills) if matrix_subset is None else matrix_subset
 
-        for row_index in range(num_skills):
+        for row_index in row_indexes:
             for col_index in range(num_skills - row_index - 1):
                 skill_pair_indexes.append([row_index, col_index + row_index + 1])
 
@@ -118,49 +117,4 @@ class SkillSimCalculatorV2(SkillSim):
         matrix_subset1: MatrixSubsetIndexes,
         matrix_subset2: MatrixSubsetIndexes,
     ) -> float:
-        cooccurence_matrix = []
-        skill1_weights = []
-        skill2_weights = []
-
-        skills_to_cooccurrence_val = TwoDimDict()
-
-        pbar = tqdm(
-            total=len(matrix_subset1) * len(matrix_subset2),
-            desc="Creating Coccur Matrix",
-        )
-
-        for skill1_index in matrix_subset1:
-            skill1_weights.append(self.skill_weight(matrix_subset1, skill1_index))
-
-            cooccurence_vector = []
-
-            for skill2_index in matrix_subset2:
-                if len(skill2_weights) != len(matrix_subset2):
-                    skill2_weights.append(
-                        np.array([self.skill_weight(matrix_subset2, skill2_index)])
-                    )
-
-                cooccurrence_val_memo = skills_to_cooccurrence_val.get_value(
-                    skill1_index, skill2_index
-                )
-
-                if cooccurrence_val_memo is None:
-                    cooccurrence_val = self.rca_cooccurrence(skill1_index, skill2_index)
-
-                    cooccurence_vector.append(cooccurrence_val)
-                    skills_to_cooccurrence_val.add_key_val_pair(
-                        skill1_index, skill2_index, cooccurrence_val
-                    )
-                else:
-                    cooccurence_vector.append(cooccurrence_val_memo)
-
-                pbar.update(1)
-
-            cooccurence_matrix.append(np.array(cooccurence_vector))
-
-        pbar.close()
-
-        return np.matmul(
-            np.array(skill1_weights),
-            np.matmul(np.array(skill2_weights), np.array(cooccurence_matrix)),
-        )
+        matrix_subset = matrix_subset1 + matrix_subset2
