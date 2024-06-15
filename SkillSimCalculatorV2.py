@@ -69,15 +69,14 @@ class SkillSimCalculatorV2(SkillSim):
     def rca_cooccurrence_by_skill_pair(self, skill_pair_index):
         return self.rca_cooccurrence(skill_pair_index[0], skill_pair_index[1])
 
-    def cooccurrence_matrix(self, matrix_subset: MatrixSubsetIndexes | None = None) -> np.ndarray[Any, np.dtype[np.int8]]:
+    def cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
         skill_pair_indexes = []
 
-        num_skills = self.skill_group.matrix.shape[1]
-        row_indexes = range(num_skills) if matrix_subset is None else matrix_subset
+        _, num_skills = self.skill_group.matrix.shape
 
-        for row_index in row_indexes:
-            for col_index in range(num_skills - row_index - 1):
-                skill_pair_indexes.append([row_index, col_index + row_index + 1])
+        for row_index in range(num_skills):
+            for col_index in range(num_skills - row_index):
+                skill_pair_indexes.append([row_index, col_index + row_index])
 
         with Pool() as pool:
             results = pool.imap(
@@ -95,7 +94,7 @@ class SkillSimCalculatorV2(SkillSim):
             return cooccurrence_matrix
 
     def skill_weight(
-        self, matrix_subset: MatrixSubsetIndexes, skill_index: int
+        self, skill_index: int, matrix_subset: MatrixSubsetIndexes
     ) -> float:
         """
         Calculates the weight (importance) of a skill for a given skill set.
@@ -112,9 +111,57 @@ class SkillSimCalculatorV2(SkillSim):
             np.array([self.rca(skill_index, job_index) for job_index in matrix_subset])
         ) / len(matrix_subset)
 
+    def skill_weight_by_skill_subset_pair(
+        self, skill_subset_pair: tuple[int, MatrixSubsetIndexes]
+    ) -> float:
+        skill_index, matrix_subset = skill_subset_pair
+        return self.skill_weight(skill_index, matrix_subset)
+
+    def skill_weights(
+        self, matrix_subset: MatrixSubsetIndexes
+    ) -> np.ndarray[Any, np.dtype[np.int8]]:
+        _, num_skills = self.skill_group.matrix.shape
+
+        index_subset_pairs = [
+            (skill_index, matrix_subset) for skill_index in range(num_skills)
+        ]
+
+        with Pool() as pool:
+            results = pool.imap(
+                self.skill_weight_by_skill_subset_pair, index_subset_pairs
+            )
+            return np.array(list(results))
+
+    def skill_set_vector(
+        self, matrix_subset1: MatrixSubsetIndexes, matrix_subset2: MatrixSubsetIndexes
+    ) -> np.ndarray[Any, np.dtype[np.int8]]:
+        skill_vector1 = np.clip(
+            np.sum(self.skill_group.matrix[matrix_subset1.indexes], axis=0), None, 1
+        )
+        skill_vector2 = np.clip(
+            np.sum(self.skill_group.matrix[matrix_subset2.indexes], axis=0), None, 1
+        )
+
+        return skill_vector1, skill_vector2
+
     def skill_set_similiarity(
         self,
         matrix_subset1: MatrixSubsetIndexes,
         matrix_subset2: MatrixSubsetIndexes,
     ) -> float:
-        matrix_subset = matrix_subset1 + matrix_subset2
+        skill_vector1, skill_vector2 = self.skill_set_vector(
+            matrix_subset1, matrix_subset2
+        )
+        skill1_weight_matrix = skill_vector1 * self.skill_weights(matrix_subset1)
+        skill2_weight_matrix = skill_vector2 * self.skill_weights(matrix_subset2)
+
+        _, num_skills = self.skill_group.matrix.shape
+        skill_weight_matrix = np.ones((num_skills, num_skills))
+        skill_weight_matrix = skill1_weight_matrix[:, np.newaxis] * skill_weight_matrix
+        skill_weight_matrix = skill2_weight_matrix * skill_weight_matrix
+
+        skill_cooccurrence_matrix = self.cooccurrence_matrix()
+
+        return np.sum(skill_weight_matrix * skill_cooccurrence_matrix) / np.sum(
+            skill_weight_matrix
+        )
