@@ -3,7 +3,6 @@ from typing import Any
 
 import numpy as np
 
-from SkillGroup import SkillGroup
 from utils.get_random_skill_group import get_random_skill_group
 from SkillSimCalculatorBaseline import get_job_population, Job
 
