@@ -117,8 +117,8 @@ class SkillSimCalculatorBaseline(SkillSim):
 
         skill_set1 = set(chain.from_iterable([list(job.skills) for job in jobs1]))
         skill_set2 = set(chain.from_iterable([list(job.skills) for job in jobs2]))
-        
-        pbar = tqdm(len(skill_set1) * len(skill_set2))
+
+        pbar = tqdm(total=len(skill_set1) * len(skill_set2))
 
         for skill1 in skill_set1:
             job1_skill_weight = self.skill_weight(skill1, jobs1)
@@ -126,14 +126,14 @@ class SkillSimCalculatorBaseline(SkillSim):
             for skill2 in skill_set2:
                 job2_skill_weight = self.skill_weight(skill2, jobs2)
                 cooccurrence_val = self.skill_cooccurence(skill1, skill2)
-                
+
                 weighted_skills = job1_skill_weight * job2_skill_weight
                 weighted_skills_total += weighted_skills
 
                 weighted_skills_coocurrence += weighted_skills * cooccurrence_val
 
                 pbar.update(1)
-                
+
         pbar.close()
 
         return weighted_skills_coocurrence / weighted_skills_total
