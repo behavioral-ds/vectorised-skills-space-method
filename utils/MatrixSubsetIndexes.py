@@ -18,3 +18,6 @@ class MatrixSubsetIndexes:
     def __iter__(self):
         for index in self.indexes:
             yield index
+            
+    def __add__(self, other_matrix_subset):
+        return sorted(list(set(self.indexes) + set(other_matrix_subset.indexes)))
