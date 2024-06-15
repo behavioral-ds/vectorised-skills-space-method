@@ -1,3 +1,5 @@
+from typing import Self
+
 class MatrixSubsetIndexes:
     indexes: list[int]
 
@@ -19,5 +21,5 @@ class MatrixSubsetIndexes:
         for index in self.indexes:
             yield index
             
-    def __add__(self, other_matrix_subset):
-        return sorted(list(set(self.indexes) + set(other_matrix_subset.indexes)))
+    def __add__(self, other_matrix_subset: Self):
+        return MatrixSubsetIndexes(sorted(list(set(self.indexes) + set(other_matrix_subset.indexes))))
