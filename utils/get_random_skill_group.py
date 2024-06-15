@@ -3,10 +3,7 @@ import random
 from SkillGroup import SkillGroup
 
 
-def get_random_skill_group():
-    num_occupations = 15
-    num_skills = 10
-
+def get_random_skill_group(num_occupations = 15, num_skills = 10) -> SkillGroup:
     occupations = [f"occupation-{i}" for i in range(1, num_occupations + 1)]
     skills = [f"skill-{i}" for i in range(1, num_skills + 1)]
 
