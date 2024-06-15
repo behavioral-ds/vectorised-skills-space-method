@@ -1,7 +1,6 @@
 import unittest
 import random
-
-import numpy as np
+import time
 
 from utils.get_random_skill_group import get_random_skill_group
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
@@ -10,15 +9,21 @@ from SkillSimCalculatorV2 import SkillSimCalculatorV2
 
 
 class TestCooccurrenceMatrix(unittest.TestCase):
-    def test_no_removed_skills(self):
+    def test_skill_set_similarity(self):
         num_occupations = 15
         num_skills = 5
+
+        print("Skill Set Similarity Test")
 
         for test_num in range(1, 6):
             skill_group = get_random_skill_group(
                 num_occupations * test_num, num_skills * test_num
             )
             job_population = get_job_population(skill_group)
+
+            print(
+                f"Test {test_num}: Occupations = {num_occupations * test_num}, Jobs = {len(job_population)}, Skills = {num_skills * test_num}"
+            )
 
             skill_sim_calc = SkillSimCalculatorBaseline(
                 job_population, skills=skill_group.skill_names
@@ -40,13 +45,23 @@ class TestCooccurrenceMatrix(unittest.TestCase):
                 )
             )
 
+            start = time.time()
             baseline_result = skill_sim_calc.skill_set_similiarity(
                 job_population[start_index:end_index],
                 [job_population[i] for i in matrix_subset_2.indexes],
             )
+            end = time.time()
+            baseline_time = round((end - start) * 1000, 2)
+
+            start = time.time()
             v2_result = skill_sim_calc_2.skill_set_similiarity(
                 matrix_subset_1, matrix_subset_2
             )
+            end = time.time()
+            v2_time = round((end - start) * 1000, 2)
+
+            print("Baseline Execution Time:", baseline_time, "milliseconds")
+            print("V2 Execution Time:", v2_time, "milliseconds")
 
             with self.subTest():
                 self.assertAlmostEqual(baseline_result, v2_result, 2)
