@@ -8,7 +8,7 @@ from SkillSimCalculatorBaseline import get_job_population, SkillSimCalculatorBas
 from SkillSimCalculatorV2 import SkillSimCalculatorV2
 
 
-class TestCooccurrenceMatrix(unittest.TestCase):
+class SkillSetSimilarity(unittest.TestCase):
     def test_skill_set_similarity(self):
         num_occupations = 15
         num_skills = 5
