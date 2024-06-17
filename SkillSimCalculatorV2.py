@@ -13,27 +13,55 @@ from utils.TwoDimDict import TwoDimDict
 class SkillSimCalculatorV2(SkillSim):
     skill_group: SkillGroup
     cooccurrence_matrix: np.ndarray[Any, np.dtype[np.int8]] | None
+    num_skills_in_job: dict[int, int]
+    num_jobs_with_skill: dict[int, int]
+    num_skills: int
+    rca_memo: dict[tuple[int, int], float]
 
     def __init__(self, skill_group: SkillGroup):
         self.skill_group = skill_group
         self.cooccurrence_matrix = None
+        self.num_skills_in_job = {}
+        self.num_jobs_with_skill = {}
+        self.num_skills = np.sum(skill_group.matrix)
+        self.rca_memo = {}
 
     def rca(self, skill_index: int, job_index: int) -> float:
+        if (skill_index, job_index) in self.rca_memo:
+            return self.rca_memo[(skill_index, job_index)]
+
         # RCA numerator
         is_skill_in_job = self.skill_group.matrix[job_index][skill_index]
 
         if is_skill_in_job == 0:
             return 0
 
-        num_skills_in_job = np.sum(self.skill_group.matrix[job_index])
+        num_skills_in_job = None
+
+        if job_index in self.num_skills_in_job:
+            num_skills_in_job = self.num_skills_in_job[job_index]
+        else:
+            num_skills_in_job = np.sum(self.skill_group.matrix[job_index])
+            self.num_skills_in_job[job_index] = num_skills_in_job
 
         # RCA denominator
-        num_jobs_with_skill = np.sum(self.skill_group.matrix[:, skill_index])
-        num_skills = np.sum(self.skill_group.matrix)
+        num_jobs_with_skill = None
 
-        return (is_skill_in_job / num_skills_in_job) / (
+        if skill_index in self.num_jobs_with_skill:
+            num_jobs_with_skill = self.num_jobs_with_skill[skill_index]
+        else:
+            num_jobs_with_skill = np.sum(self.skill_group.matrix[:, skill_index])
+            self.num_jobs_with_skill[skill_index] = num_jobs_with_skill
+
+        num_skills = self.num_skills
+
+        rca_val = (is_skill_in_job / num_skills_in_job) / (
             num_jobs_with_skill / num_skills
         )
+
+        self.rca_memo[(skill_index, job_index)] = rca_val
+
+        return rca_val
 
     def rca_cooccurrence(self, skill1_index: int, skill2_index: int) -> float:
         """
