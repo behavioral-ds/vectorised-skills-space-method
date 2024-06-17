@@ -2,13 +2,33 @@ import unittest
 import random
 import time
 
+import numpy as np
+
 from utils.get_random_skill_group import get_random_skill_group
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from SkillSimCalculatorBaseline import get_job_population, SkillSimCalculatorBaseline
 from SkillSimCalculatorV2 import SkillSimCalculatorV2
 
 
-class SkillSetSimilarity(unittest.TestCase):
+class TestSkillSimCalculatorV2(unittest.TestCase):
+    def test_set_cooccurrence_matrix(self):
+        skill_group_1 = get_random_skill_group(15, 5)
+        skill_group_2 = get_random_skill_group(15, 5)
+        
+        while skill_group_1 == skill_group_2:
+            skill_group_2 = get_random_skill_group(15, 5)
+        
+        calc_1 = SkillSimCalculatorV2(skill_group_1)
+        calc_1.calc_cooccurrence_matrix()
+        
+        calc_2 = SkillSimCalculatorV2(skill_group_2)
+        cooccur_matrix_2 = calc_2.calc_cooccurrence_matrix()
+        
+        calc_1.set_cooccurrence_matrix(cooccur_matrix_2)
+        
+        self.assertTrue(np.array_equal(calc_1.cooccurrence_matrix, cooccur_matrix_2))
+        
+
     def test_skill_set_similarity(self):
         num_occupations = 15
         num_skills = 5
@@ -64,4 +84,4 @@ class SkillSetSimilarity(unittest.TestCase):
             print("V2 Execution Time:", v2_time, "milliseconds")
 
             with self.subTest():
-                self.assertAlmostEqual(baseline_result, v2_result, 2)
+                self.assertEqual(int(baseline_result * 100), int(v2_result * 100))
