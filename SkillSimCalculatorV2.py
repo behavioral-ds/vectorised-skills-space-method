@@ -12,9 +12,11 @@ from utils.TwoDimDict import TwoDimDict
 
 class SkillSimCalculatorV2(SkillSim):
     skill_group: SkillGroup
+    cooccurrence_matrix: np.ndarray[Any, np.dtype[np.int8]] | None
 
     def __init__(self, skill_group: SkillGroup):
         self.skill_group = skill_group
+        self.cooccurrence_matrix = None
 
     def rca(self, skill_index: int, job_index: int) -> float:
         # RCA numerator
@@ -69,7 +71,7 @@ class SkillSimCalculatorV2(SkillSim):
     def rca_cooccurrence_by_skill_pair(self, skill_pair_index):
         return self.rca_cooccurrence(skill_pair_index[0], skill_pair_index[1])
 
-    def cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
+    def calc_cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
         skill_pair_indexes = []
 
         _, num_skills = self.skill_group.matrix.shape
@@ -95,7 +97,14 @@ class SkillSimCalculatorV2(SkillSim):
                 cooccurrence_matrix[index1][index2] = cooccurrence_val
                 cooccurrence_matrix[index2][index1] = cooccurrence_val
 
+            self.cooccurrence_matrix = cooccurrence_matrix
+
             return cooccurrence_matrix
+
+    def set_cooccurrence_matrix(
+        self, cooccurrence_matrix: np.ndarray[Any, np.dtype[np.int8]]
+    ):
+        self.cooccurrence_matrix = cooccurrence_matrix
 
     def skill_weight(
         self, skill_index: int, matrix_subset: MatrixSubsetIndexes
@@ -166,7 +175,11 @@ class SkillSimCalculatorV2(SkillSim):
         skill_weight_matrix = skill1_weight_matrix[:, np.newaxis] * skill_weight_matrix
         skill_weight_matrix = skill2_weight_matrix * skill_weight_matrix
 
-        skill_cooccurrence_matrix = self.cooccurrence_matrix()
+        skill_cooccurrence_matrix = (
+            self.calc_cooccurrence_matrix()
+            if self.cooccurrence_matrix is None
+            else self.cooccurrence_matrix
+        )
 
         return np.sum(skill_weight_matrix * skill_cooccurrence_matrix) / np.sum(
             skill_weight_matrix
