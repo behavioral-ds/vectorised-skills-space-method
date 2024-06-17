@@ -79,9 +79,13 @@ class SkillSimCalculatorV2(SkillSim):
                 skill_pair_indexes.append([row_index, col_index + row_index])
 
         with Pool() as pool:
-            results = pool.imap(
-                self.rca_cooccurrence_by_skill_pair,
-                skill_pair_indexes,
+            results = tqdm(
+                pool.imap(
+                    self.rca_cooccurrence_by_skill_pair,
+                    skill_pair_indexes,
+                ),
+                total=len(skill_pair_indexes),
+                desc="Co-occur Matrix",
             )
 
             cooccurrence_matrix = np.zeros((num_skills, num_skills))
@@ -127,8 +131,10 @@ class SkillSimCalculatorV2(SkillSim):
         ]
 
         with Pool() as pool:
-            results = pool.imap(
-                self.skill_weight_by_skill_subset_pair, index_subset_pairs
+            results = tqdm(
+                pool.imap(self.skill_weight_by_skill_subset_pair, index_subset_pairs),
+                total=len(index_subset_pairs),
+                desc="Skill Weights",
             )
             return np.array(list(results))
 
