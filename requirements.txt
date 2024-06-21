@@ -1,2 +1,4 @@
+cupy-cuda12x==13.2.0
+fastrlock==0.8.2
 numpy==1.26.4
 tqdm==4.66.4
