@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
 
-from SkillGroup import SkillGroup
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 
 class SkillSim(ABC):
     @abstractmethod
-    def skill_set_similiarity(
+    def skill_set_similarity(
         self,
-        matrix_subset1: MatrixSubsetIndexes,
-        matrix_subset2: MatrixSubsetIndexes,
+        matrix_subset_1: MatrixSubsetIndexes,
+        matrix_subset_2: MatrixSubsetIndexes,
     ) -> float:
         pass
