@@ -174,6 +174,6 @@ class TestSkillSimCalculatorV2(unittest.TestCase):
 
             print("V2 Execution Time:", v2_time, "milliseconds")
             print("V3 Execution Time:", v3_time, "milliseconds")
-
+            
             with self.subTest():
-                self.assertEqual(int(v2_result * 100), int(v3_result * 100))
+                self.assertAlmostEqual(v2_result, v3_result, 6)
