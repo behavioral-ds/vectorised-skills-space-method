@@ -12,7 +12,7 @@ from SkillSimCalculatorV2 import SkillSimCalculatorV2
 from SkillSimCalculatorV3 import SkillSimCalculatorV3
 
 
-class TestSkillSimCalculatorV2(unittest.TestCase):
+class TestSkillSimCalculators(unittest.TestCase):
     def test_set_cooccurrence_matrix(self):
         skill_group_1 = get_random_skill_group(15, 5)
         skill_group_2 = get_random_skill_group(15, 5)
