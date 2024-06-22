@@ -1,4 +1,5 @@
 import cupy as cp
+import numpy as np
 
 from SkillSim import SkillSim
 from SkillGroup import SkillGroup
@@ -86,7 +87,10 @@ class SkillSimCalculatorV3(SkillSim):
         )
         skill_weight_matrix = subset_2_weight_vector * skill_weight_matrix
 
-        return cp.sum(
-            subset_2_weight_vector
-            * (subset_1_weight_vector[:, cp.newaxis] * self._skill_sim_matrix)
-        ) / cp.sum(skill_weight_matrix)
+        return np.float64(
+            cp.sum(
+                subset_2_weight_vector
+                * (subset_1_weight_vector[:, cp.newaxis] * self._skill_sim_matrix)
+            )
+            / cp.sum(skill_weight_matrix)
+        )
