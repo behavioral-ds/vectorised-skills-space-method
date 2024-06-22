@@ -187,16 +187,16 @@ class SkillSimCalculatorV2(SkillSim):
 
         return skill_vector1, skill_vector2
 
-    def skill_set_similiarity(
+    def skill_set_similarity(
         self,
-        matrix_subset1: MatrixSubsetIndexes,
-        matrix_subset2: MatrixSubsetIndexes,
+        matrix_subset_1: MatrixSubsetIndexes,
+        matrix_subset_2: MatrixSubsetIndexes,
     ) -> float:
         skill_vector1, skill_vector2 = self.skill_set_vector(
-            matrix_subset1, matrix_subset2
+            matrix_subset_1, matrix_subset_2
         )
-        skill1_weight_matrix = skill_vector1 * self.skill_weights(matrix_subset1)
-        skill2_weight_matrix = skill_vector2 * self.skill_weights(matrix_subset2)
+        skill1_weight_matrix = skill_vector1 * self.skill_weights(matrix_subset_1)
+        skill2_weight_matrix = skill_vector2 * self.skill_weights(matrix_subset_2)
 
         _, num_skills = self.skill_group.matrix.shape
         skill_weight_matrix = np.ones((num_skills, num_skills))
