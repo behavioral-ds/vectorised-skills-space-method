@@ -29,6 +29,12 @@ class SkillSimCalculatorV3(SkillSim):
             nums_jobs_with_skill / num_skills
         )
 
+    def get_rca_matrix(self) -> cp.ndarray | None:
+        return self._rca_matrix
+
+    def set_rca_matrix(self, rca_matrix: cp.ndarray):
+        self._rca_matrix = rca_matrix
+
     def calc_skill_sim_matrix(self):
         effective_use_matrix = cp.where(self._rca_matrix >= 1.0, 1.0, 0.0)
 
@@ -47,6 +53,9 @@ class SkillSimCalculatorV3(SkillSim):
 
     def get_skill_sim_matrix(self) -> cp.ndarray | None:
         return self._skill_sim_matrix
+
+    def set_skill_sim_matrix(self, skill_sim_matrix: cp.ndarray):
+        self._skill_sim_matrix = skill_sim_matrix
 
     def skill_set_one_hot_vector(
         self, matrix_subset: MatrixSubsetIndexes
