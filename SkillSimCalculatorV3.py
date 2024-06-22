@@ -75,7 +75,10 @@ class SkillSimCalculatorV3(SkillSim):
         ) / len(matrix_subset)
 
     def skill_set_similarity(
-        self, matrix_subset_1: MatrixSubsetIndexes, matrix_subset_2: MatrixSubsetIndexes
+        self,
+        matrix_subset_1: MatrixSubsetIndexes,
+        matrix_subset_2: MatrixSubsetIndexes,
+        skill_weight_vector: cp.ndarray | None = None,
     ) -> float:
         if self._rca_matrix is None:
             self.calc_rca_matrix()
@@ -87,7 +90,11 @@ class SkillSimCalculatorV3(SkillSim):
         # when the element-wise dot product is calculated with the skill sim matrix this means
         # skills that weren't included in the subset will be zeroed out and not count towards the sum
         subset_1_weight_vector = self.skill_weight_vector(matrix_subset_1)
-        subset_2_weight_vector = self.skill_weight_vector(matrix_subset_2)
+        subset_2_weight_vector = (
+            self.skill_weight_vector(matrix_subset_2)
+            if skill_weight_vector is None
+            else skill_weight_vector
+        )
 
         _, num_skills = self._skill_sim_matrix.shape
         skill_weight_matrix = cp.ones((num_skills, num_skills))
