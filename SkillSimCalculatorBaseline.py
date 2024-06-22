@@ -109,7 +109,7 @@ class SkillSimCalculatorBaseline(SkillSim):
 
         return total_rca / len(jobs)
 
-    def skill_set_similiarity(self, jobs1: list[Job], jobs2: list[Job]) -> float:
+    def skill_set_similarity(self, jobs1: list[Job], jobs2: list[Job]) -> float:
         weighted_skills_coocurrence = 0
         weighted_skills_total = 0
 
