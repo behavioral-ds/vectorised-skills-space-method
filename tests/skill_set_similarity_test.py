@@ -3,7 +3,7 @@ import random
 import time
 
 import numpy as np
-import cupy as cp
+from numpy_api import xp
 
 from utils.get_random_skill_group import get_random_skill_group
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
@@ -122,7 +122,7 @@ class TestSkillSimCalculators(unittest.TestCase):
             print("V3 Execution Time:", v3_time, "milliseconds")
 
             with self.subTest():
-                self.assertTrue(cp.array_equal(v3_result, cp.asarray(v2_result)))
+                self.assertTrue(xp.array_equal(v3_result, xp.asarray(v2_result)))
 
     def test_sss_v3_with_v2(self):
         num_occupations = 90

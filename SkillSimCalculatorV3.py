@@ -1,4 +1,6 @@
-import cupy as cp
+from typing import Any
+
+from numpy_api import xp
 import numpy as np
 
 from SkillSim import SkillSim
@@ -8,67 +10,65 @@ from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 class SkillSimCalculatorV3(SkillSim):
     _skill_group: SkillGroup
-    _skill_group_matrix: cp.ndarray
+    _skill_group_matrix: Any
 
-    _rca_matrix: cp.ndarray | None
-    _skill_sim_matrix: cp.ndarray | None
+    _rca_matrix: Any
+    _skill_sim_matrix: Any
 
     def __init__(self, skill_group: SkillGroup):
         self._skill_group = skill_group
-        self._skill_group_matrix = cp.asarray(skill_group.matrix)
+        self._skill_group_matrix = xp.asarray(skill_group.matrix)
         self._rca_matrix = None
         self._skill_sim_matrix = None
 
     def calc_rca_matrix(self):
-        num_skills_in_jobs = cp.sum(self._skill_group_matrix, axis=1)[:, cp.newaxis]
+        num_skills_in_jobs = xp.sum(self._skill_group_matrix, axis=1)[:, xp.newaxis]
 
-        nums_jobs_with_skill = cp.sum(self._skill_group_matrix, axis=0)
-        num_skills = cp.sum(self._skill_group_matrix)
+        nums_jobs_with_skill = xp.sum(self._skill_group_matrix, axis=0)
+        num_skills = xp.sum(self._skill_group_matrix)
 
         self._rca_matrix = (self._skill_group_matrix / num_skills_in_jobs) / (
             nums_jobs_with_skill / num_skills
         )
 
-    def get_rca_matrix(self) -> cp.ndarray | None:
+    def get_rca_matrix(self):
         return self._rca_matrix
 
-    def set_rca_matrix(self, rca_matrix: cp.ndarray):
+    def set_rca_matrix(self, rca_matrix):
         self._rca_matrix = rca_matrix
 
     def calc_skill_sim_matrix(self):
-        effective_use_matrix = cp.where(self._rca_matrix >= 1.0, 1.0, 0.0)
+        effective_use_matrix = xp.where(self._rca_matrix >= 1.0, 1.0, 0.0)
 
-        effective_use_sum_matrix = cp.matmul(
+        effective_use_sum_matrix = xp.matmul(
             effective_use_matrix.T, effective_use_matrix
         )
 
-        skill_count_vector = cp.diag(effective_use_sum_matrix)
+        skill_count_vector = xp.diag(effective_use_sum_matrix)
 
-        t1 = cp.tile(skill_count_vector, (len(skill_count_vector), 1))
+        t1 = xp.tile(skill_count_vector, (len(skill_count_vector), 1))
         t2 = t1.T
 
-        effective_use_sum_max = cp.maximum(t1, t2)
+        effective_use_sum_max = xp.maximum(t1, t2)
 
         self._skill_sim_matrix = effective_use_sum_matrix / effective_use_sum_max
 
-    def get_skill_sim_matrix(self) -> cp.ndarray | None:
+    def get_skill_sim_matrix(self):
         return self._skill_sim_matrix
 
-    def set_skill_sim_matrix(self, skill_sim_matrix: cp.ndarray):
+    def set_skill_sim_matrix(self, skill_sim_matrix):
         self._skill_sim_matrix = skill_sim_matrix
 
-    def skill_set_one_hot_vector(
-        self, matrix_subset: MatrixSubsetIndexes
-    ) -> cp.ndarray:
+    def skill_set_one_hot_vector(self, matrix_subset: MatrixSubsetIndexes):
         # rename of previous calcv2 skill_set_vector method
-        skill_vector = cp.clip(
-            cp.sum(self._skill_group_matrix[matrix_subset.indexes], axis=0), None, 1
+        skill_vector = xp.clip(
+            xp.sum(self._skill_group_matrix[matrix_subset.indexes], axis=0), None, 1
         )
 
         return skill_vector
 
-    def skill_weight_vector(self, matrix_subset: MatrixSubsetIndexes) -> cp.ndarray:
-        return cp.sum(
+    def skill_weight_vector(self, matrix_subset: MatrixSubsetIndexes):
+        return xp.sum(
             self.skill_set_one_hot_vector(matrix_subset)
             * self._rca_matrix[matrix_subset.indexes],
             axis=0,
@@ -78,7 +78,7 @@ class SkillSimCalculatorV3(SkillSim):
         self,
         matrix_subset_1: MatrixSubsetIndexes,
         matrix_subset_2: MatrixSubsetIndexes | None,
-        skill_weight_vector: cp.ndarray | None = None,
+        skill_weight_vector = None,
     ) -> float:
         if self._rca_matrix is None:
             self.calc_rca_matrix()
@@ -102,16 +102,16 @@ class SkillSimCalculatorV3(SkillSim):
         )
 
         _, num_skills = self._skill_sim_matrix.shape
-        skill_weight_matrix = cp.ones((num_skills, num_skills))
+        skill_weight_matrix = xp.ones((num_skills, num_skills))
         skill_weight_matrix = (
-            subset_1_weight_vector[:, cp.newaxis] * skill_weight_matrix
+            subset_1_weight_vector[:, xp.newaxis] * skill_weight_matrix
         )
         skill_weight_matrix = subset_2_weight_vector * skill_weight_matrix
 
         return np.float64(
-            cp.sum(
+            xp.sum(
                 subset_2_weight_vector
-                * (subset_1_weight_vector[:, cp.newaxis] * self._skill_sim_matrix)
+                * (subset_1_weight_vector[:, xp.newaxis] * self._skill_sim_matrix)
             )
-            / cp.sum(skill_weight_matrix)
+            / xp.sum(skill_weight_matrix)
         )
