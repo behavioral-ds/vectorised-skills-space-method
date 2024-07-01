@@ -76,7 +76,7 @@ class SkillPopulation:
             if len(skill_vectors) != 0:
                 end_subset_index = row_index + len(skill_sets) - num_skill_sets_removed
                 self.skill_group_subsets.append(
-                    skill_group, MatrixSubsetIndexes(row_index, end_subset_index)
+                    (skill_group, MatrixSubsetIndexes((row_index, end_subset_index)))
                 )
                 row_index = end_subset_index + 1
                 job_skill_matrix += skill_vectors
@@ -91,7 +91,13 @@ class SkillPopulation:
         # counting number of occurrences for each skill
         skill_frequency: dict[str, int] = {}
 
-        for skill_sets in skill_group_skills.values():
+        for skill_sets_data in skill_group_skills.values():
+            skill_sets = (
+                skill_sets_data
+                if type(skill_sets_data) is list
+                else skill_sets_data["skill_sets"]
+            )
+
             for skill_set in skill_sets:
                 skills = skill_set if type(skill_set) is list else skill_set["skills"]
 
@@ -111,7 +117,7 @@ class SkillPopulation:
     def __get_skill_group_with_sets(
         self, skill_group_id: str, skill_group_data: list | dict
     ) -> tuple[SkillGroup, list[list[str]]]:
-        if skill_group_data is list:
+        if type(skill_group_data) is list:
             return (SkillGroup(skill_group_id), skill_group_data)
 
         return (
