@@ -5,29 +5,32 @@ import numpy as np
 
 from SkillSim import SkillSim
 from SkillGroup import SkillGroup
+from SkillPopulation import SkillPopulation
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 
 class SkillSimCalculatorV3(SkillSim):
     _skill_group: SkillGroup
-    _skill_group_matrix: Any
+    _skill_population_matrix: Any
 
     _rca_matrix: Any
     _skill_sim_matrix: Any
 
-    def __init__(self, skill_group: SkillGroup):
-        self._skill_group = skill_group
-        self._skill_group_matrix = xp.asarray(skill_group.matrix)
+    def __init__(self, skill_population: SkillPopulation | SkillGroup):
+        self._skill_population = skill_population
+        self._skill_population_matrix = xp.asarray(skill_population.matrix)
         self._rca_matrix = None
         self._skill_sim_matrix = None
 
     def calc_rca_matrix(self):
-        num_skills_in_jobs = xp.sum(self._skill_group_matrix, axis=1)[:, xp.newaxis]
+        num_skills_in_jobs = xp.sum(self._skill_population_matrix, axis=1)[
+            :, xp.newaxis
+        ]
 
-        nums_jobs_with_skill = xp.sum(self._skill_group_matrix, axis=0)
-        num_skills = xp.sum(self._skill_group_matrix)
+        nums_jobs_with_skill = xp.sum(self._skill_population_matrix, axis=0)
+        num_skills = xp.sum(self._skill_population_matrix)
 
-        self._rca_matrix = (self._skill_group_matrix / num_skills_in_jobs) / (
+        self._rca_matrix = (self._skill_population_matrix / num_skills_in_jobs) / (
             nums_jobs_with_skill / num_skills
         )
 
@@ -62,7 +65,7 @@ class SkillSimCalculatorV3(SkillSim):
     def skill_set_one_hot_vector(self, matrix_subset: MatrixSubsetIndexes):
         # rename of previous calcv2 skill_set_vector method
         skill_vector = xp.clip(
-            xp.sum(self._skill_group_matrix[matrix_subset.indexes], axis=0), None, 1
+            xp.sum(self._skill_population_matrix[matrix_subset.indexes], axis=0), None, 1
         )
 
         return skill_vector
