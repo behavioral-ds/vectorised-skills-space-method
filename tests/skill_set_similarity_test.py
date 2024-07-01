@@ -5,7 +5,7 @@ import time
 import numpy as np
 from numpy_api import xp
 
-from utils.get_random_skill_group import get_random_skill_group
+from utils.get_random_skills import get_random_skill_group
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from SkillSimCalculatorBaseline import get_job_population, SkillSimCalculatorBaseline
 from SkillSimCalculatorV2 import SkillSimCalculatorV2
