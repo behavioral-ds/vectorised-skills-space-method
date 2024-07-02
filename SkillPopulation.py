@@ -162,7 +162,7 @@ class SkillPopulation:
 
         return matrix_subset
 
-    def get_matrix_subset_by_sg(
+    def get_matrix_subset_by_ss_meta(
         self, filter_func: Callable[[Type[SkillSetMetadata]], bool]
     ) -> MatrixSubsetIndexes:
         indexes = []
