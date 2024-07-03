@@ -53,7 +53,6 @@ class SkillPopulation:
                 skill_group_id, skill_group_data
             )
             skill_vectors = []
-            num_skill_sets_removed = 0
 
             for skill_set_data in skill_sets:
                 skill_set_metadata, skills = self.__get_skill_set_with_metadata(
@@ -70,14 +69,14 @@ class SkillPopulation:
                 if has_skill:
                     skill_vectors.append(skill_vector)
                     self.skill_sets_metadata.append(skill_set_metadata)
-                else:
-                    num_skill_sets_removed += 1
 
             if len(skill_vectors) != 0:
-                end_subset_index = row_index + len(skill_sets) - num_skill_sets_removed
+                end_subset_index = row_index + len(skill_vectors) - 1
+                
                 self.skill_group_subsets.append(
                     (skill_group, MatrixSubsetIndexes((row_index, end_subset_index)))
                 )
+                
                 row_index = end_subset_index + 1
                 job_skill_matrix += skill_vectors
 
