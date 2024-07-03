@@ -21,6 +21,9 @@ class SkillSimCalculatorV3(SkillSim):
         self._skill_population_matrix = xp.asarray(skill_population.matrix)
         self._rca_matrix = None
         self._skill_sim_matrix = None
+        
+    def get_skill_population_matrix(self) -> Any:
+        return self._skill_population_matrix
 
     def calc_rca_matrix(self):
         num_skills_in_jobs = xp.sum(self._skill_population_matrix, axis=1)[
