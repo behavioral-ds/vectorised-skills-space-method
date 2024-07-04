@@ -82,7 +82,7 @@ class SkillSimCalculatorV3(SkillSim):
             axis=0,
         ) / len(matrix_subset)
 
-    def get_sss_components(
+    def get_skill_weight_components(
         self,
         matrix_subset_1: MatrixSubsetIndexes,
         matrix_subset_2: MatrixSubsetIndexes | None,
@@ -125,7 +125,7 @@ class SkillSimCalculatorV3(SkillSim):
         skill_weight_vector=None,
     ) -> float:
         subset_1_weight_vector, subset_2_weight_vector, skill_weight_matrix = (
-            self.get_sss_components(
+            self.get_skill_weight_components(
                 matrix_subset_1, matrix_subset_2, skill_weight_vector
             )
         )
