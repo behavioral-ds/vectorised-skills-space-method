@@ -21,7 +21,7 @@ class SkillSimCalculatorV3(SkillSim):
         self._skill_population_matrix = xp.asarray(skill_population.matrix)
         self._rca_matrix = None
         self._skill_sim_matrix = None
-        
+
     def get_skill_population_matrix(self) -> Any:
         return self._skill_population_matrix
 
@@ -68,7 +68,9 @@ class SkillSimCalculatorV3(SkillSim):
     def skill_set_one_hot_vector(self, matrix_subset: MatrixSubsetIndexes):
         # rename of previous calcv2 skill_set_vector method
         skill_vector = xp.clip(
-            xp.sum(self._skill_population_matrix[matrix_subset.indexes], axis=0), None, 1
+            xp.sum(self._skill_population_matrix[matrix_subset.indexes], axis=0),
+            None,
+            1,
         )
 
         return skill_vector
@@ -80,12 +82,12 @@ class SkillSimCalculatorV3(SkillSim):
             axis=0,
         ) / len(matrix_subset)
 
-    def skill_set_similarity(
+    def get_sss_components(
         self,
         matrix_subset_1: MatrixSubsetIndexes,
         matrix_subset_2: MatrixSubsetIndexes | None,
-        skill_weight_vector = None,
-    ) -> float:
+        skill_weight_vector=None,
+    ):
         if self._rca_matrix is None:
             self.calc_rca_matrix()
 
@@ -113,6 +115,20 @@ class SkillSimCalculatorV3(SkillSim):
             subset_1_weight_vector[:, xp.newaxis] * skill_weight_matrix
         )
         skill_weight_matrix = subset_2_weight_vector * skill_weight_matrix
+
+        return subset_1_weight_vector, subset_2_weight_vector, skill_weight_matrix
+
+    def skill_set_similarity(
+        self,
+        matrix_subset_1: MatrixSubsetIndexes,
+        matrix_subset_2: MatrixSubsetIndexes | None,
+        skill_weight_vector=None,
+    ) -> float:
+        subset_1_weight_vector, subset_2_weight_vector, skill_weight_matrix = (
+            self.get_sss_components(
+                matrix_subset_1, matrix_subset_2, skill_weight_vector
+            )
+        )
 
         return np.float64(
             xp.sum(
