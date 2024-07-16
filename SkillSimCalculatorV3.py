@@ -22,7 +22,7 @@ class SkillSimCalculatorV3(SkillSim):
         self._rca_matrix = None
         self._skill_sim_matrix = None
 
-    def get_skill_group(self) -> SkillPopulation | SkillGroup:
+    def get_skill_population(self) -> SkillPopulation | SkillGroup:
         return self._skill_population
 
     def get_skill_population_matrix(self) -> Any:
