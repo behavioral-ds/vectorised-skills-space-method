@@ -4,7 +4,7 @@ from numpy_api import xp
 import numpy as np
 from numpy.typing import NDArray
 
-from SkillSim import SkillSim
+from sim_calculators.SkillSim import SkillSim
 from SkillGroup import SkillGroup
 from SkillPopulation import SkillPopulation
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes

@@ -3,7 +3,7 @@ from itertools import chain
 
 from tqdm import tqdm
 
-from SkillSim import SkillSim
+from sim_calculators.SkillSim import SkillSim
 from SkillGroup import SkillGroup
 
 

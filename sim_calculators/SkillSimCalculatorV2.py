@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 from tqdm import tqdm
 
-from SkillSim import SkillSim
+from sim_calculators.SkillSim import SkillSim
 from SkillGroup import SkillGroup
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from utils.TwoDimDict import TwoDimDict

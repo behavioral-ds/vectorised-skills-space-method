@@ -2,7 +2,6 @@ import unittest
 
 import numpy as np
 
-from SkillPopulation import SkillPopulation
 from SkillGroup import SkillGroup
 
 from utils.get_random_skills import (

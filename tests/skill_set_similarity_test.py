@@ -7,9 +7,11 @@ from numpy_api import xp
 
 from utils.get_random_skills import get_random_skill_group
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
-from SkillSimCalculatorBaseline import get_job_population, SkillSimCalculatorBaseline
-from SkillSimCalculatorV2 import SkillSimCalculatorV2
-from SkillSimCalculatorV3 import SkillSimCalculatorV3
+from sim_calculators.SkillSimCalculatorBaseline import (
+    SkillSimCalculatorBaseline,
+    get_job_population,
+)
+from sim_calculators import SkillSimCalculatorV2, SkillSimCalculatorV3
 
 
 class TestSkillSimCalculators(unittest.TestCase):
@@ -174,6 +176,6 @@ class TestSkillSimCalculators(unittest.TestCase):
 
             print("V2 Execution Time:", v2_time, "milliseconds")
             print("V3 Execution Time:", v3_time, "milliseconds")
-            
+
             with self.subTest():
                 self.assertAlmostEqual(v2_result, v3_result, 6)
