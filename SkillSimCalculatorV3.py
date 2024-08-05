@@ -49,18 +49,18 @@ class SkillSimCalculatorV3(SkillSim):
     def calc_skill_sim_matrix(self):
         effective_use_matrix = xp.where(self._rca_matrix >= 1.0, 1.0, 0.0)
 
-        effective_use_sum_matrix = xp.matmul(
+        skill_joint_freq_matrix = xp.matmul(
             effective_use_matrix.T, effective_use_matrix
         )
 
-        skill_count_vector = xp.diag(effective_use_sum_matrix)
+        skill_effective_freq_vector = xp.diag(skill_joint_freq_matrix)
 
-        t1 = xp.tile(skill_count_vector, (len(skill_count_vector), 1))
-        t2 = t1.T
+        q1 = xp.tile(skill_effective_freq_vector, (len(skill_effective_freq_vector), 1))
+        q2 = q1.T
 
-        effective_use_sum_max = xp.maximum(t1, t2)
+        antecedent_matrix = xp.maximum(q1, q2)
 
-        self._skill_sim_matrix = effective_use_sum_matrix / effective_use_sum_max
+        self._skill_sim_matrix = skill_joint_freq_matrix / antecedent_matrix
 
     def get_skill_sim_matrix(self):
         return self._skill_sim_matrix
@@ -68,27 +68,27 @@ class SkillSimCalculatorV3(SkillSim):
     def set_skill_sim_matrix(self, skill_sim_matrix):
         self._skill_sim_matrix = skill_sim_matrix
 
-    def skill_set_one_hot_vector(self, matrix_subset: MatrixSubsetIndexes):
+    def skill_set_one_hot_vector(self, population_subset: MatrixSubsetIndexes):
         # rename of previous calcv2 skill_set_vector method
         skill_vector = xp.clip(
-            xp.sum(self._skill_population_matrix[matrix_subset.indexes], axis=0),
+            xp.sum(self._skill_population_matrix[population_subset.indexes], axis=0),
             None,
             1,
         )
 
         return skill_vector
 
-    def skill_weight_vector(self, matrix_subset: MatrixSubsetIndexes):
+    def skill_weight_vector(self, population_subset: MatrixSubsetIndexes):
         return xp.sum(
-            self.skill_set_one_hot_vector(matrix_subset)
-            * self._rca_matrix[matrix_subset.indexes],
+            self.skill_set_one_hot_vector(population_subset)
+            * self._rca_matrix[population_subset.indexes],
             axis=0,
-        ) / len(matrix_subset)
+        ) / len(population_subset)
 
     def get_skill_weight_components(
         self,
-        matrix_subset_1: MatrixSubsetIndexes,
-        matrix_subset_2: MatrixSubsetIndexes | None,
+        population_subset_1: MatrixSubsetIndexes,
+        population_subset_2: MatrixSubsetIndexes | None,
         skill_weight_vector=None,
     ):
         if self._rca_matrix is None:
@@ -97,7 +97,7 @@ class SkillSimCalculatorV3(SkillSim):
         if self._skill_sim_matrix is None:
             self.calc_skill_sim_matrix()
 
-        if matrix_subset_2 is None and skill_weight_vector is None:
+        if population_subset_2 is None and skill_weight_vector is None:
             raise Exception(
                 "A second matrix subset or custom skill weight vector needs to be provided. Both cannot be None."
             )
@@ -105,9 +105,9 @@ class SkillSimCalculatorV3(SkillSim):
         # skills that aren't included in the skill set of subset 1 or 2 will have a weight of zero
         # when the element-wise dot product is calculated with the skill sim matrix this means
         # skills that weren't included in the subset will be zeroed out and not count towards the sum
-        subset_1_weight_vector = self.skill_weight_vector(matrix_subset_1)
+        subset_1_weight_vector = self.skill_weight_vector(population_subset_1)
         subset_2_weight_vector = (
-            self.skill_weight_vector(matrix_subset_2)
+            self.skill_weight_vector(population_subset_2)
             if skill_weight_vector is None
             else skill_weight_vector
         )
@@ -123,20 +123,20 @@ class SkillSimCalculatorV3(SkillSim):
 
     def skill_set_similarity(
         self,
-        matrix_subset_1: MatrixSubsetIndexes,
-        matrix_subset_2: MatrixSubsetIndexes | None,
+        population_subset_1: MatrixSubsetIndexes,
+        population_subset_2: MatrixSubsetIndexes | None,
         skill_weight_vector=None,
     ) -> float:
-        subset_1_weight_vector, subset_2_weight_vector, skill_weight_matrix = (
+        skill_set_weight_vector_1, skill_set_weight_vector_2, skill_weight_matrix = (
             self.get_skill_weight_components(
-                matrix_subset_1, matrix_subset_2, skill_weight_vector
+                population_subset_1, population_subset_2, skill_weight_vector
             )
         )
 
         return np.float64(
             xp.sum(
-                subset_2_weight_vector
-                * (subset_1_weight_vector[:, xp.newaxis] * self._skill_sim_matrix)
+                skill_set_weight_vector_2
+                * (skill_set_weight_vector_1[:, xp.newaxis] * self._skill_sim_matrix)
             )
             / xp.sum(skill_weight_matrix)
         )
