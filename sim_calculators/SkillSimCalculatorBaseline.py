@@ -1,48 +1,9 @@
-from dataclasses import dataclass
 from itertools import chain
 
 from tqdm import tqdm
 
 from sim_calculators.SkillSim import SkillSim
-from SkillGroup import SkillGroup
-
-
-@dataclass
-class Skill:
-    # skill is a class so other properties can be added later
-    name: str
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-    def __eq__(self, value: object) -> bool:
-        return self.name == value.name
-
-
-@dataclass
-class Job:
-    id: str
-    name: str
-    skills: set[Skill]
-
-
-def get_job_population(skill_group: SkillGroup) -> list[Job]:
-    job_population = []
-
-    num_jobs, num_skills = skill_group.matrix.shape
-
-    for job_index in range(num_jobs):
-        skills = []
-
-        for skill_index in range(num_skills):
-            if skill_group.matrix[job_index][skill_index] == 1:
-                skills.append(Skill(name=skill_group.skill_names[skill_index]))
-
-        job_population.append(
-            Job(job_index, skill_group.skill_group_names[job_index], skills)
-        )
-
-    return job_population
+from sim_calculators.entities import Skill, Job
 
 
 class SkillSimCalculatorBaseline(SkillSim):

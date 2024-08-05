@@ -2,7 +2,8 @@ from typing import Any
 
 import numpy as np
 
-from SkillSimCalculatorBaseline import Job
+from sim_calculators.entities import Job
+
 
 def get_skill_group_matrix(
     job_population: list[Job], skill_names: list[str]

@@ -6,12 +6,12 @@ import numpy as np
 from numpy_api import xp
 
 from utils.get_random_skills import get_random_skill_group
-from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
-from sim_calculators.SkillSimCalculatorBaseline import (
+from utils import MatrixSubsetIndexes, get_job_population
+from sim_calculators import (
     SkillSimCalculatorBaseline,
-    get_job_population,
+    SkillSimCalculatorV2,
+    SkillSimCalculatorV3,
 )
-from sim_calculators import SkillSimCalculatorV2, SkillSimCalculatorV3
 
 
 class TestSkillSimCalculators(unittest.TestCase):

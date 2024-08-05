@@ -3,8 +3,7 @@ from typing import Any
 
 import numpy as np
 
-from utils import get_random_skill_group, get_skill_group_matrix
-from sim_calculators.SkillSimCalculatorBaseline import get_job_population
+from utils import get_random_skill_group, get_skill_group_matrix, get_job_population
 
 
 class TestSkillGroup(unittest.TestCase):
