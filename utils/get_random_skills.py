@@ -2,8 +2,8 @@ import random
 import copy
 from uuid import uuid4
 
-from SkillPopulation import SkillPopulation
-from SkillGroup import SkillGroup
+from entities import SkillPopulation
+from entities import SkillGroup
 
 
 def get_random_occ_to_skills(

@@ -5,8 +5,8 @@ import numpy as np
 from numpy.typing import NDArray
 
 from sim_calculators.SkillSim import SkillSim
-from SkillGroup import SkillGroup
-from SkillPopulation import SkillPopulation
+from entities import SkillGroup
+from entities import SkillPopulation
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 

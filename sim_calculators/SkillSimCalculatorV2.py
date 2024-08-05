@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 
 from sim_calculators.SkillSim import SkillSim
-from SkillGroup import SkillGroup
+from entities import SkillGroup
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from utils.TwoDimDict import TwoDimDict
 

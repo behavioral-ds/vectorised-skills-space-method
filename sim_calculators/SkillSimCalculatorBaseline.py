@@ -3,7 +3,7 @@ from itertools import chain
 from tqdm import tqdm
 
 from sim_calculators.SkillSim import SkillSim
-from sim_calculators.entities import Skill, Job
+from entities import Skill, Job
 
 
 class SkillSimCalculatorBaseline(SkillSim):

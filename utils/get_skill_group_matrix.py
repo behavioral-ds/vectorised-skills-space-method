@@ -2,7 +2,7 @@ from typing import Any
 
 import numpy as np
 
-from sim_calculators.entities import Job
+from entities import Job
 
 
 def get_skill_group_matrix(

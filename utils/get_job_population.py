@@ -1,5 +1,5 @@
-from SkillGroup import SkillGroup
-from sim_calculators.entities import Job, Skill
+from entities import SkillGroup
+from entities import Job, Skill
 
 
 def get_job_population(skill_group: SkillGroup) -> list[Job]:

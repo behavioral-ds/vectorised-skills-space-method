@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from SkillGroup import SkillGroup
+from entities import SkillGroup
 
 from utils.get_random_skills import (
     get_random_occ_to_skills,

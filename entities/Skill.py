@@ -11,10 +11,3 @@ class Skill:
 
     def __eq__(self, value: object) -> bool:
         return self.name == value.name
-
-
-@dataclass
-class Job:
-    id: str
-    name: str
-    skills: set[Skill]
