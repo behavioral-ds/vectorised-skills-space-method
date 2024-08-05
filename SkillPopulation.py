@@ -1,7 +1,8 @@
-from typing import Any, Optional, Callable, Type
+from typing import Optional, Callable, Type
 from dataclasses import dataclass
 
 import numpy as np
+from numpy.typing import NDArray
 
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
@@ -20,7 +21,7 @@ class SkillGroup:
 
 
 class SkillPopulation:
-    matrix: np.ndarray[Any, np.dtype[np.int8]]  # matrix is a 2D array of only 1s and 0s
+    matrix: NDArray[np.float64]  # matrix is a 2D array of only 1s and 0s
     skill_group_subsets: list[
         tuple[SkillGroup, MatrixSubsetIndexes]
     ]  # skill is 1-M with rows in matrix
