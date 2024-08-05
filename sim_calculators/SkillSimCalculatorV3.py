@@ -1,13 +1,12 @@
 from typing import Any
 
-from numpy_api import xp
 import numpy as np
 from numpy.typing import NDArray
 
 from sim_calculators.SkillSim import SkillSim
 from entities import SkillGroup
 from entities import SkillPopulation
-from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
+from utils import MatrixSubsetIndexes, xp
 
 
 class SkillSimCalculatorV3(SkillSim):

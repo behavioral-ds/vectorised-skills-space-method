@@ -3,10 +3,9 @@ import random
 import time
 
 import numpy as np
-from numpy_api import xp
 
 from utils.get_random_skills import get_random_skill_group
-from utils import MatrixSubsetIndexes, get_job_population
+from utils import MatrixSubsetIndexes, get_job_population, xp
 from sim_calculators import (
     SkillSimCalculatorBaseline,
     SkillSimCalculatorV2,
