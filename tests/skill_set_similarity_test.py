@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 
-from .random.get_random_skills import get_random_skill_group
+from tests.random.get_random_skills import get_random_skill_group
 from utils import MatrixSubsetIndexes, get_job_population, xp
 from sim_calculators import (
     SkillSimCalculatorBaseline,
