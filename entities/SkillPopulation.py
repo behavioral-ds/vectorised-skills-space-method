@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
+from tqdm import tqdm
 
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
@@ -49,7 +50,7 @@ class SkillPopulation:
         self.skill_sets_metadata = []
         row_index = 0
 
-        for skill_group_id, skill_group_data in skill_group_skills.items():
+        for skill_group_id, skill_group_data in tqdm(skill_group_skills.items(), desc="Creating Skill Population"):
             skill_group, skill_sets = self.__get_skill_group_with_sets(
                 skill_group_id, skill_group_data
             )
@@ -91,7 +92,7 @@ class SkillPopulation:
         # counting number of occurrences for each skill
         skill_frequency: dict[str, int] = {}
 
-        for skill_sets_data in skill_group_skills.values():
+        for skill_sets_data in tqdm(skill_group_skills.values(), desc="Removing Skills below Threshold"):
             skill_sets = (
                 skill_sets_data
                 if type(skill_sets_data) is list
