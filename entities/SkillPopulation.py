@@ -1,3 +1,7 @@
+import os
+import json
+import pickle
+import shutil
 from typing import Optional, Callable, Type
 from dataclasses import dataclass
 
@@ -5,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 from tqdm import tqdm
 
-from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
+from utils import MatrixSubsetIndexes, gzip_directory, uncompress_gzip
 
 
 @dataclass
@@ -34,9 +38,36 @@ class SkillPopulation:
 
     def __init__(
         self,
-        skill_group_skills: dict[str, list[list[str]]],
-        skill_freq_threshold: int = 5,
+        file_path: str | None = None,
+        skill_group_skills: dict[str, list[list[str]]] | None = None,
+        skill_freq_threshold: int | None = 5,
     ):
+        if file_path is None and skill_group_skills is None:
+            raise Exception(
+                "Either a file path to a saved population or skill group skills dictionary needs to be provided."
+            )
+
+        if file_path is not None:
+            uncompress_gzip(file_path)
+
+            self.matrix = np.load(f"{file_path}/matrix.npy")
+
+            with open(f"{file_path}/skill_names.json", "r") as f:
+                self.skill_names = json.load(f)
+
+            with open(f"{file_path}/removed_skills.json", "r") as f:
+                self.removed_skills = set(json.load(f))
+
+            with open(f"{file_path}/skill_group_subsets.pkl", "rb") as f:
+                self.skill_group_subsets = pickle.load(f)
+
+            with open(f"{file_path}/skill_sets_metadata.pkl", "rb") as f:
+                self.skill_sets_metadata = pickle.load(f)
+
+            shutil.rmtree(file_path)
+
+            return
+
         skill_names, removed_skills = self.__filter_skills_by_threshold(
             skill_group_skills, skill_freq_threshold
         )
@@ -95,6 +126,51 @@ class SkillPopulation:
         self.skill_sets_metadata = None
         self.skill_names = None
         self.removed_skills = None
+
+    def save(self, file_path: str, output_name: str):
+        population_path = f"{file_path}/{output_name}"
+        os.makedirs(population_path)
+
+        np.save(population_path, self.matrix)
+
+        with open(f"{population_path}/skill_names.json", "w") as f:
+            json.dump(self.skill_names, f, indent=2)
+
+        with open(f"{population_path}/removed_skills.json", "w") as f:
+            json.dump(list(self.removed_skills), f, indent=2)
+
+        with open(f"{population_path}/skill_group_subsets.pkl", "wb") as f:
+            pickle.dump(self.skill_group_subsets, f)
+
+        with open(f"{population_path}/skill_sets_metadata.pkl", "wb") as f:
+            pickle.dump(self.skill_sets_metadata, f)
+
+        gzip_directory(population_path, f"{output_name}.tar.gz")
+
+    def get_matrix_subset_by_sg(
+        self, filter_func: Callable[[Type[SkillGroup]], bool]
+    ) -> MatrixSubsetIndexes:
+        matrix_subset = None
+
+        for skill_group, group_matrix_subset in self.skill_group_subsets:
+            if filter_func(skill_group):
+                if matrix_subset is None:
+                    matrix_subset = group_matrix_subset
+                else:
+                    matrix_subset += group_matrix_subset
+
+        return matrix_subset
+
+    def get_matrix_subset_by_ss_meta(
+        self, filter_func: Callable[[Type[SkillSetMetadata]], bool]
+    ) -> MatrixSubsetIndexes:
+        indexes = []
+
+        for i, skill_set_metadata in enumerate(self.skill_sets_metadata):
+            if filter_func(skill_set_metadata):
+                indexes.append(i)
+
+        return MatrixSubsetIndexes(indexes)
 
     def __filter_skills_by_threshold(
         self,
@@ -162,28 +238,3 @@ class SkillPopulation:
         )
 
         return SkillSetMetadata(id, id_source, properties), skill_set_data["skills"]
-
-    def get_matrix_subset_by_sg(
-        self, filter_func: Callable[[Type[SkillGroup]], bool]
-    ) -> MatrixSubsetIndexes:
-        matrix_subset = None
-
-        for skill_group, group_matrix_subset in self.skill_group_subsets:
-            if filter_func(skill_group):
-                if matrix_subset is None:
-                    matrix_subset = group_matrix_subset
-                else:
-                    matrix_subset += group_matrix_subset
-
-        return matrix_subset
-
-    def get_matrix_subset_by_ss_meta(
-        self, filter_func: Callable[[Type[SkillSetMetadata]], bool]
-    ) -> MatrixSubsetIndexes:
-        indexes = []
-
-        for i, skill_set_metadata in enumerate(self.skill_sets_metadata):
-            if filter_func(skill_set_metadata):
-                indexes.append(i)
-
-        return MatrixSubsetIndexes(indexes)

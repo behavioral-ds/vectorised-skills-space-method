@@ -3,3 +3,4 @@ from .get_job_population import get_job_population
 from .MatrixSubsetIndexes import MatrixSubsetIndexes
 from .TwoDimDict import TwoDimDict
 from .numpy_api import xp, ndarray
+from .gzip import gzip_directory, uncompress_gzip
