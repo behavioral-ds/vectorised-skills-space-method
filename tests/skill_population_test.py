@@ -70,34 +70,37 @@ class TestSkillPopulation(unittest.TestCase):
                     remove_duplicates(skill_group.skill_group_names),
                     [x[0].id for x in skill_population_2.skill_group_subsets],
                 )
+    
+    # TODO: When job population multiprocessing or implementation in another lang
+    # is implemented the following function can be used to test it
+    
+    # def test_multiprocessing(self):
+    #     occ_to_skills = get_random_occ_to_skills()
+    #     skill_population_mp = get_random_skill_population(True, occ_to_skills)
+    #     skill_population_old = get_random_skill_population(
+    #         True, occ_to_skills, is_mp=False
+    #     )
 
-    def test_multiprocessing(self):
-        occ_to_skills = get_random_occ_to_skills()
-        skill_population_mp = get_random_skill_population(True, occ_to_skills)
-        skill_population_old = get_random_skill_population(
-            True, occ_to_skills, is_mp=False
-        )
+    #     with self.subTest():
+    #         self.assertTrue(
+    #             np.array_equal(skill_population_mp.matrix, skill_population_old.matrix)
+    #         )
 
-        with self.subTest():
-            self.assertTrue(
-                np.array_equal(skill_population_mp.matrix, skill_population_old.matrix)
-            )
+    #     with self.subTest():
+    #         self.assertEqual(
+    #             skill_population_mp.skill_names, skill_population_old.skill_names
+    #         )
 
-        with self.subTest():
-            self.assertEqual(
-                skill_population_mp.skill_names, skill_population_old.skill_names
-            )
+    #     with self.subTest():
+    #         self.assertEqual(
+    #             skill_population_mp.removed_skills, skill_population_old.removed_skills
+    #         )
 
-        with self.subTest():
-            self.assertEqual(
-                skill_population_mp.removed_skills, skill_population_old.removed_skills
-            )
-
-        with self.subTest():
-            self.assertEqual(
-                skill_population_mp.skill_group_subsets,
-                skill_population_old.skill_group_subsets,
-            )
+    #     with self.subTest():
+    #         self.assertEqual(
+    #             skill_population_mp.skill_group_subsets,
+    #             skill_population_old.skill_group_subsets,
+    #         )
             
 if __name__ == '__main__':
     unittest.main()

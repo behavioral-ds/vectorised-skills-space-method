@@ -20,6 +20,10 @@ class SkillGroup:
     properties: Optional[dict] = None
 
 
+# THIS IS CURRENTLY THE SAME AS THE NOT OLD IMPLEMENTATION
+# WILL CHANGE WHEN EFFICIENCY IMPORVEMENT ARE MADE TO SkillPopulation
+
+
 class SkillPopulationOld:
     matrix: NDArray[np.float64]  # matrix is a 2D array of only 1s and 0s
     skill_group_subsets: list[
@@ -73,11 +77,11 @@ class SkillPopulationOld:
 
             if len(skill_vectors) != 0:
                 end_subset_index = row_index + len(skill_vectors) - 1
-                
+
                 self.skill_group_subsets.append(
                     (skill_group, MatrixSubsetIndexes((row_index, end_subset_index)))
                 )
-                
+
                 row_index = end_subset_index + 1
                 job_skill_matrix += skill_vectors
 

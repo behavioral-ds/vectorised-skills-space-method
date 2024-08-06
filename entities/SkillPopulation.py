@@ -1,11 +1,8 @@
-import multiprocessing.pool
 from typing import Optional, Callable, Type
 from dataclasses import dataclass
-import multiprocessing
 
 import numpy as np
 from numpy.typing import NDArray
-from tqdm import tqdm
 
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
@@ -47,50 +44,42 @@ class SkillPopulation:
 
         num_unique_skills = len(self.skill_names)
 
-        with multiprocessing.Pool() as pool:
-            job_skill_matrix = []
-            self.skill_group_subsets = []
-            self.skill_sets_metadata = []
-            row_index = 0
-            
-            for skill_group_id, skill_group_data in tqdm(
-                pool.imap(skill_group_skills.items()),
-                total=len(skill_group_skills),
-                desc="Creating Skill Population"
-            ):
-                skill_group, skill_sets = self.__get_skill_group_with_sets(
-                    skill_group_id, skill_group_data
+        job_skill_matrix = []
+        self.skill_group_subsets = []
+        self.skill_sets_metadata = []
+        row_index = 0
+
+        for skill_group_id, skill_group_data in skill_group_skills.items():
+            skill_group, skill_sets = self.__get_skill_group_with_sets(
+                skill_group_id, skill_group_data
+            )
+            skill_vectors = []
+
+            for skill_set_data in skill_sets:
+                skill_set_metadata, skills = self.__get_skill_set_with_metadata(
+                    skill_set_data
                 )
-                skill_vectors = []
+                has_skill = False
+                skill_vector = np.zeros(num_unique_skills)
 
-                for skill_set_data in skill_sets:
-                    skill_set_metadata, skills = self.__get_skill_set_with_metadata(
-                        skill_set_data
-                    )
-                    has_skill = False
-                    skill_vector = np.zeros(num_unique_skills)
+                for skill in skills:
+                    if skill not in self.removed_skills:
+                        has_skill = True
+                        skill_vector[self.skill_names.index(skill)] = 1
 
-                    for skill in skills:
-                        if skill not in self.removed_skills:
-                            has_skill = True
-                            skill_vector[self.skill_names.index(skill)] = 1
+                if has_skill:
+                    skill_vectors.append(skill_vector)
+                    self.skill_sets_metadata.append(skill_set_metadata)
 
-                    if has_skill:
-                        skill_vectors.append(skill_vector)
-                        self.skill_sets_metadata.append(skill_set_metadata)
-
-                if len(skill_vectors) != 0:
-                    end_subset_index = row_index + len(skill_vectors) - 1
-
-                    self.skill_group_subsets.append(
-                        (
-                            skill_group,
-                            MatrixSubsetIndexes((row_index, end_subset_index)),
-                        )
-                    )
-
-                    row_index = end_subset_index + 1
-                    job_skill_matrix += skill_vectors
+            if len(skill_vectors) != 0:
+                end_subset_index = row_index + len(skill_vectors) - 1
+                
+                self.skill_group_subsets.append(
+                    (skill_group, MatrixSubsetIndexes((row_index, end_subset_index)))
+                )
+                
+                row_index = end_subset_index + 1
+                job_skill_matrix += skill_vectors
 
         self.matrix = np.array(job_skill_matrix, dtype=np.int8)
 
