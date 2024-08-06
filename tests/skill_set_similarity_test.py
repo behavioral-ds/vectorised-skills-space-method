@@ -4,8 +4,13 @@ import time
 
 import numpy as np
 
-from tests.random.get_random_skills import get_random_skill_group
+from tests.random.get_random_skills import (
+    get_random_skill_group,
+    get_random_occ_to_skills,
+    get_random_skill_population
+)
 from utils import MatrixSubsetIndexes, get_job_population, xp
+from entities import SkillGroup, SkillPopulation
 from sim_calculators import (
     SkillSimCalculatorBaseline,
     SkillSimCalculatorV2,
@@ -132,9 +137,13 @@ class TestSkillSimCalculators(unittest.TestCase):
         print("Skill Set Similarity Test (V2 & V3)")
 
         for test_num in range(1, 6):
-            skill_group = get_random_skill_group(
+            occ_to_skills = get_random_occ_to_skills(
                 num_occupations * test_num, num_skills * test_num
             )
+
+            skill_group = SkillGroup(occ_to_skills)
+            skill_population = SkillPopulation(occ_to_skills)
+
             job_population = get_job_population(skill_group)
 
             print(
@@ -142,7 +151,7 @@ class TestSkillSimCalculators(unittest.TestCase):
             )
 
             skill_sim_calc_v2 = SkillSimCalculatorV2(skill_group)
-            skill_sim_calc_v3 = SkillSimCalculatorV3(skill_group)
+            skill_sim_calc_v3 = SkillSimCalculatorV3(skill_population)
 
             start_index = random.randint(0, len(job_population) - 2)
             end_index = random.randint(start_index + 1, len(job_population) - 1)
@@ -178,6 +187,7 @@ class TestSkillSimCalculators(unittest.TestCase):
 
             with self.subTest():
                 self.assertAlmostEqual(v2_result, v3_result, 6)
-                
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main()
