@@ -1,13 +1,12 @@
-from multiprocessing import Pool, Process
+from multiprocessing import Pool
 from typing import Any
 
 import numpy as np
 from tqdm import tqdm
 
-from sim_calculators.SkillSim import SkillSim
+from sim_calculators import SkillSim
 from entities import SkillGroup
-from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
-from utils.TwoDimDict import TwoDimDict
+from utils import MatrixSubsetIndexes
 
 
 class SkillSimCalculatorV2(SkillSim):

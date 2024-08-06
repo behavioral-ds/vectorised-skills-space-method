@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 
-from utils.get_random_skills import get_random_skill_group
+from .random.get_random_skills import get_random_skill_group
 from utils import MatrixSubsetIndexes, get_job_population, xp
 from sim_calculators import (
     SkillSimCalculatorBaseline,
@@ -178,3 +178,6 @@ class TestSkillSimCalculators(unittest.TestCase):
 
             with self.subTest():
                 self.assertAlmostEqual(v2_result, v3_result, 6)
+                
+if __name__ == '__main__':
+    unittest.main()

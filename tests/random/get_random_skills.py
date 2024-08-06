@@ -2,8 +2,9 @@ import random
 import copy
 from uuid import uuid4
 
-from entities import SkillPopulation
-from entities import SkillGroup
+from entities.SkillGroup import SkillGroup
+from entities.SkillPopulation import SkillPopulation
+from entities.SkillPopulationOld import SkillPopulationOld
 
 
 def get_random_occ_to_skills(
@@ -45,7 +46,9 @@ def get_random_skill_group(
 
 
 def get_random_skill_population(
-    include_rand_props: bool, rand_occ_to_jobs_skills: dict[str, list[list[str]]]
+    include_rand_props: bool,
+    rand_occ_to_jobs_skills: dict[str, list[list[str]]],
+    is_mp=True,
 ) -> SkillPopulation:
     occ_to_jobs_skills = copy.deepcopy(rand_occ_to_jobs_skills)
 
@@ -99,4 +102,7 @@ def get_random_skill_population(
                 "skill_sets": skill_sets,
             }
 
-    return SkillPopulation(occ_to_jobs_skills)
+    if is_mp:
+        return SkillPopulation(occ_to_jobs_skills)
+
+    return SkillPopulationOld(occ_to_jobs_skills)

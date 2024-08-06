@@ -1,5 +1,4 @@
 import unittest
-from typing import Any
 
 import numpy as np
 
@@ -36,3 +35,7 @@ class TestSkillGroup(unittest.TestCase):
                 break
 
         self.assertTrue(is_equal)
+
+
+if __name__ == "__main__":
+    unittest.main()
