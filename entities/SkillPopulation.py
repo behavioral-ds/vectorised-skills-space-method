@@ -50,7 +50,9 @@ class SkillPopulation:
         self.skill_sets_metadata = []
         row_index = 0
 
-        for skill_group_id, skill_group_data in tqdm(skill_group_skills.items(), desc="Creating Skill Population"):
+        for skill_group_id, skill_group_data in tqdm(
+            skill_group_skills.items(), desc="Creating Skill Population"
+        ):
             skill_group, skill_sets = self.__get_skill_group_with_sets(
                 skill_group_id, skill_group_data
             )
@@ -74,15 +76,25 @@ class SkillPopulation:
 
             if len(skill_vectors) != 0:
                 end_subset_index = row_index + len(skill_vectors) - 1
-                
+
                 self.skill_group_subsets.append(
                     (skill_group, MatrixSubsetIndexes((row_index, end_subset_index)))
                 )
-                
+
                 row_index = end_subset_index + 1
                 job_skill_matrix += skill_vectors
 
         self.matrix = np.array(job_skill_matrix, dtype=np.int8)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.matrix = None
+        self.skill_group_subsets = None
+        self.skill_sets_metadata = None
+        self.skill_names = None
+        self.removed_skills = None
 
     def __filter_skills_by_threshold(
         self,
@@ -92,7 +104,9 @@ class SkillPopulation:
         # counting number of occurrences for each skill
         skill_frequency: dict[str, int] = {}
 
-        for skill_sets_data in tqdm(skill_group_skills.values(), desc="Removing Skills below Threshold"):
+        for skill_sets_data in tqdm(
+            skill_group_skills.values(), desc="Removing Skills below Threshold"
+        ):
             skill_sets = (
                 skill_sets_data
                 if type(skill_sets_data) is list
