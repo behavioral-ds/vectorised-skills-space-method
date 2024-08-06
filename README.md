@@ -1,6 +1,6 @@
 # Vectorised Skills Space Method (VSSM)
 
-#### An Implementation of the Skill Set Similarity using Matrix Operations
+#### An Implementation of Skill Set Similarity using Matrix Operations
 
 ## What is this Project?
 
