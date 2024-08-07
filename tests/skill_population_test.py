@@ -128,7 +128,6 @@ class TestSkillPopulation(unittest.TestCase):
             self.assertIsNone(skill_population_2.removed_skills)
             self.assertIsNone(skill_population_2.skill_group_subsets)
 
-    # TODO:
     def test_save_load(self):
         os.makedirs("./data", exist_ok=True)
 
