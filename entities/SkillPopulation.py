@@ -9,7 +9,7 @@ import numpy as np
 from numpy.typing import NDArray
 from tqdm import tqdm
 
-from utils import MatrixSubsetIndexes
+from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from utils.gzip import gzip_directory, uncompress_gzip
 
 
