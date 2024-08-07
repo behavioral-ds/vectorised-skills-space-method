@@ -103,6 +103,6 @@ def get_random_skill_population(
             }
 
     if is_mp:
-        return SkillPopulation(occ_to_jobs_skills)
+        return SkillPopulation(skill_group_skills=occ_to_jobs_skills)
 
     return SkillPopulationOld(occ_to_jobs_skills)

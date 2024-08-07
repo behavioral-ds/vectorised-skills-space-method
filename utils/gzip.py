@@ -1,6 +1,5 @@
 import os
 import tarfile
-import shutil
 
 
 def gzip_directory(source_dir: str, output_filename: str):
@@ -8,14 +7,15 @@ def gzip_directory(source_dir: str, output_filename: str):
         tar.add(source_dir, arcname=os.path.basename(source_dir))
 
 
-def uncompress_gzip(file_path):
+def uncompress_gzip(file_path: str):
     # Ensure the file has a .tar.gz extension
     if not file_path.endswith(".tar.gz"):
         raise ValueError("The file must have a .tar.gz extension")
+    
+    dir_path = "/".join(file_path.split("/")[:-1])
 
-    # Get the directory where the file is located
-    dir_name = os.path.dirname(file_path)
+    os.makedirs(dir_path, exist_ok=True)
 
     # Open the tarfile and extract its contents
     with tarfile.open(file_path, "r:gz") as tar:
-        tar.extractall(path=dir_name)
+        tar.extractall(path=dir_path)

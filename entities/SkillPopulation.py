@@ -49,6 +49,8 @@ class SkillPopulation:
 
         if file_path is not None:
             uncompress_gzip(file_path)
+            
+            file_path = file_path.replace(".tar.gz", "")
 
             self.matrix = np.load(f"{file_path}/matrix.npy")
 
@@ -129,9 +131,9 @@ class SkillPopulation:
 
     def save(self, file_path: str, output_name: str):
         population_path = f"{file_path}/{output_name}"
-        os.makedirs(population_path)
+        os.makedirs(population_path, exist_ok=True)
 
-        np.save(population_path, self.matrix)
+        np.save(f"{population_path}/matrix.npy", self.matrix)
 
         with open(f"{population_path}/skill_names.json", "w") as f:
             json.dump(self.skill_names, f, indent=2)
@@ -145,7 +147,9 @@ class SkillPopulation:
         with open(f"{population_path}/skill_sets_metadata.pkl", "wb") as f:
             pickle.dump(self.skill_sets_metadata, f)
 
-        gzip_directory(population_path, f"{output_name}.tar.gz")
+        gzip_directory(population_path, f"{file_path}/{output_name}.tar.gz")
+        
+        shutil.rmtree(population_path)
 
     def get_matrix_subset_by_sg(
         self, filter_func: Callable[[Type[SkillGroup]], bool]

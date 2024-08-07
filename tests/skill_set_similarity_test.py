@@ -142,7 +142,7 @@ class TestSkillSimCalculators(unittest.TestCase):
             )
 
             skill_group = SkillGroup(occ_to_skills)
-            skill_population = SkillPopulation(occ_to_skills)
+            skill_population = SkillPopulation(skill_group_skills=occ_to_skills)
 
             job_population = get_job_population(skill_group)
 
