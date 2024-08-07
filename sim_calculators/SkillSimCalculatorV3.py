@@ -17,20 +17,15 @@ class SkillSimCalculatorV3(SkillSim):
     could arise in terms of functionality and output.
     """
 
-    _skill_population: SkillPopulation | SkillGroup
     _skill_population_matrix: NDArray[np.int8]
 
     _rca_matrix: NDArray[np.float64]
     _skill_sim_matrix: NDArray[np.float64]
 
     def __init__(self, skill_population: SkillPopulation | SkillGroup):
-        self._skill_population = skill_population
         self._skill_population_matrix = xp.asarray(skill_population.matrix)
         self._rca_matrix = None
         self._skill_sim_matrix = None
-
-    def get_skill_population(self) -> SkillPopulation | SkillGroup:
-        return self._skill_population
 
     def get_skill_population_matrix(self) -> Any:
         return self._skill_population_matrix
