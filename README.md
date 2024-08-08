@@ -6,16 +6,16 @@
 
 - [What is this Project?](#what-is-this-project)
 - [Project Dependencies and Setup](#project-dependencies-and-setup)
-    - [Dependencies](#dependencies)
-    - [Installation via PIP](#installation-via-pip)
-    - [Running from Source](#running-from-source)
+  - [Dependencies](#dependencies)
+  - [Installation via PIP](#installation-via-pip)
+  - [Running from Source](#running-from-source)
 - [Example VSSM Usage](#example-vssm-usage)
-    - [Setting the Path and Imports](#setting-the-path-and-imports)
-    - [Creating a Skill Population](#creating-a-skill-population)
-    - [Calculating Skill Set Similarity](#calculating-skill-set-similarity)
-        - [Getting Two Skill Population Subsets](#getting-two-skill-population-subsets)
-        - [Precomputation of the RCA and Skill Similarity Matrices](#precomputation-of-the-rca-and-skill-similarity-matrices)
-        - [Calculate Skill Set Similarity](#calculate-skill-set-similarity)
+  - [Setting the Path and Imports](#setting-the-path-and-imports)
+  - [Creating a Skill Population](#creating-a-skill-population)
+  - [Calculating Skill Set Similarity](#calculating-skill-set-similarity)
+    - [Getting Two Skill Population Subsets](#getting-two-skill-population-subsets)
+    - [Precomputation of the RCA and Skill Similarity Matrices](#precomputation-of-the-rca-and-skill-similarity-matrices)
+    - [Calculate Skill Set Similarity](#calculate-skill-set-similarity)
 - [Project Structure](#project-structure)
 - [Testing](#testing)
 
@@ -154,13 +154,15 @@ print("Skill Set Similarity =", sss)
 The project structure of VSSM is as follows:
 
 - root: Contains `main.py`, requirements files and other configuration files.
-    - entities: Contains classes or dataclasses that are commonly used throughout different modules. For example `SkillPopulation` and `Job`.
-    - sim_calculators: Contains the different versions of the Skill Similarity calculators as well as the abstract class all are based off.
-    - tests: Contains the unittests for this project.
-        - random: Contains functions to generate random data for the tests.
-    - utils: Contains various utility functions such as `gzip_directory` or `TwoDimDict`.
+  - entities: Contains classes or dataclasses that are commonly used throughout different modules. For example `SkillPopulation` and `Job`.
+  - sim_calculators: Contains the different versions of the Skill Similarity calculators as well as the abstract class all are based off.
+  - tests: Contains the unittests for this project.
+    - random: Contains functions to generate random data for the tests.
+  - utils: Contains various utility functions such as `gzip_directory` or `TwoDimDict`.
 
 ## Testing
 
 - Run all tests: `python -m unittest discover -s tests -p "*_test.py"`
 - Run a specific test: `python -m unittest tests.<test-module>.<test-class>.<test-method>`
+
+<p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/"><a property="dct:title" rel="cc:attributionURL" href="https://github.com/LGXprod/skill-similarity">VSSM</a> by <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/LGXprod">Matthew Ghannoum</a> is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">CC BY 4.0<img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt=""><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt=""></a></p>
