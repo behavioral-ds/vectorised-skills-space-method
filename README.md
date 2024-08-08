@@ -87,7 +87,7 @@ skill_population = SkillPopulation(job_skills)
 However, for large datasets `skill_population` will use a lot of memory and possibly won't be released for a long time. In this case you should use a context manager to instantiate a `SkillPopulation`, save it if required and pass it to the skill calculator:
 
 ```Python
-with SkillPopulation(skill_group_skills=job_title_skills) as skill_population:
+with SkillPopulation(skill_group_skills=job_skills) as skill_population:
     skill_population.save(file_path="../data", output_name="skill_population")
     skill_calc = SkillSimCalculatorV3(skill_population)
 ```
