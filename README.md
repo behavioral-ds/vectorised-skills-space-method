@@ -98,6 +98,39 @@ Afterwhich if you try to access the fields within `skill_population` (outside th
 
 #### Getting Two Skill Population Subsets
 
+The `get_matrix_subset_by_sg` method takes a callback function for filtering the `skill_population` matrix by skill_group and returns an object of `MatrixSubsetIndexes`, which is essentially a wrapper for the indexes of the matrix which were selected from the filter.
+
+```Python
+def filter_by_job_name(job_name: str, skill_group: SkillGroup) -> bool:
+    return skill_group.id.lower() == job_name
+
+soft_dev_subset = skill_population.get_matrix_subset_by_sg(
+    lambda skill_group: SkillGroup: filter_by_job_name("Software Developer", skill_group)
+)
+data_sci_subset = skill_population.get_matrix_subset_by_sg(
+    lambda skill_group: SkillGroup: filter_by_job_name("Data Scientist", skill_group)
+)
+```
+
+#### Precomputation of the RCA and Skill Similarity Matrices
+
+As mentioned in the implementation report, the RCA and Skill Similarity matrices are precomputed as this can be done very efficiently using matrix operations and enables memoisation for even faster subsequent computation.
+
+Precompute these matrices by running their respective methods:
+
+```Python
+skill_calc.calc_rca_matrix()
+skill_calc.calc_skill_sim_matrix()
+```
+
+#### Calculate Skill Set Similarity
+
+The last step is to run the `skill_set_similarity` method, which takes two `MatrixSubsetIndexes` objects and returns a `np.float64` which is the skill set similarity value:
+
+```Python
+sss = skill_calc.skill_set_similarity(soft_dev_subset, data_sci_subset)
+print("Skill Set Similarity =", sss)
+```
 
 ## Project Structure
 
