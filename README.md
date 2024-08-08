@@ -2,6 +2,23 @@
 
 #### An Implementation of Skill Set Similarity using Matrix Operations
 
+## Table of Contents
+
+- [What is this Project?](#what-is-this-project)
+- [Project Dependencies and Setup](#project-dependencies-and-setup)
+    - [Dependencies](#dependencies)
+    - [Installation via PIP](#installation-via-pip)
+    - [Running from Source](#running-from-source)
+- [Example VSSM Usage](#example-vssm-usage)
+    - [Setting the Path and Imports](#setting-the-path-and-imports)
+    - [Creating a Skill Population](#creating-a-skill-population)
+    - [Calculating Skill Set Similarity](#calculating-skill-set-similarity)
+        - [Getting Two Skill Population Subsets](#getting-two-skill-population-subsets)
+        - [Precomputation of the RCA and Skill Similarity Matrices](#precomputation-of-the-rca-and-skill-similarity-matrices)
+        - [Calculate Skill Set Similarity](#calculate-skill-set-similarity)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+
 ## What is this Project?
 
 The Skills Space Method developed in [“Skill-driven Recommendations for Job Transition Pathways” (Dawson, Williams & Rizoiu 2021)](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0254722) is a novel approach to measuring the distance between sets of skills. Sets of skills in the context of this report are only associated with occupations (job titles), but can be generalised to other groups such as company or industry.
