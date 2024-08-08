@@ -57,7 +57,7 @@ Then import the `SkillPopulation` and `SkillCalculatorV3` classes:
 
 ```Python
 from skill_similarity.tests.get_random_skills.get_random_occ_to_skills import get_random_occ_to_skills # only required to generate random data, omit if you have your own dataset
-from skill_similarity.entities import SkillPopulation
+from skill_similarity.entities import SkillPopulation, SkillGroup
 from skill_similarity.sim_calculators import SkillSimCalculatorV3
 ```
 
