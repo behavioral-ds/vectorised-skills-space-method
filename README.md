@@ -134,6 +134,15 @@ print("Skill Set Similarity =", sss)
 
 ## Project Structure
 
+The project structure of VSSM is as follows:
+
+- root: Contains `main.py`, requirements files and other configuration files.
+    - entities: Contains classes or dataclasses that are commonly used throughout different modules. For example `SkillPopulation` and `Job`.
+    - sim_calculators: Contains the different versions of the Skill Similarity calculators as well as the abstract class all are based off.
+    - tests: Contains the unittests for this project.
+        - random: Contains functions to generate random data for the tests.
+    - utils: Contains various utility functions such as `gzip_directory` or `TwoDimDict`.
+
 ## Testing
 
 - Run all tests: `python -m unittest discover -s tests -p "*_test.py"`
