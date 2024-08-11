@@ -39,9 +39,7 @@ parser.add_argument(
 parser.add_argument(
     "-r",
     "--create-random",
-    type=bool,
-    required=False,
-    default=True,
+    action="store_true",
     help="Create random data if true, read data from ../data.json if false.",
 )
 
