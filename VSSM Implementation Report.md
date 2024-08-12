@@ -43,7 +43,7 @@ As such, this report aims to document an optimised implementation based on matri
 
 As mentioned in the motivation, the Skills Space Methodology is reliant on a dataset that contains a list of jobs $J = \{j_0, j_1, ..., j_n\}$ and there associated skills: $j = \{s \in S\}$. This data can be thought of as a bipartite graph, defined by an adjacency list. Where the two disjoint sets of nodes are the job and skill nodes, and the edges between them exist when a job has a skill in it’s skill set or list.
 
-![Job Skill Bipartite Graph](./docs/images/baseline-perf-chart.png)
+![Job Skill Bipartite Graph](./docs/images/job-skill-bipartite-graph.png)
 
 Given this graph (defined by the adjacency list), an adjacency matrix can be constructed, which will serve as the basis for the Skills Space matrix operations. Following the example graph shown above, the adjacency matrix of the skill population would be:
 
