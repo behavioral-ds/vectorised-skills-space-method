@@ -2,6 +2,8 @@
 
 #### An Implementation of Skill Set Similarity using Matrix Operations
 
+[![stability-beta](https://img.shields.io/badge/stability-beta-33bbff.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#beta)
+
 ## Table of Contents
 
 - [What is this Project?](#what-is-this-project)
