@@ -6,7 +6,7 @@ import numpy as np
 from entities import SkillGroup, SkillPopulation
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
-from tests.random.get_random_skills import (
+from tests.random_data.get_random_skills import (
     get_random_occ_to_skills,
     get_random_skill_population,
 )

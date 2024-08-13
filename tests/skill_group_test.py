@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from utils import get_skill_group_matrix, get_job_population
-from tests.random.get_random_skills import get_random_skill_group
+from tests.random_data.get_random_skills import get_random_skill_group
 
 
 class TestSkillGroup(unittest.TestCase):
