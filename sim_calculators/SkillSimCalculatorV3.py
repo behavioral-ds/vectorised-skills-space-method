@@ -1,3 +1,4 @@
+import copy
 from typing import Any
 
 import numpy as np
@@ -18,8 +19,8 @@ class SkillSimCalculatorV3(SkillSim):
     could arise in terms of functionality and output.
     """
 
-    _skill_population_matrix: NDArray[np.int8]
-    _rca_matrix: NDArray[np.float64]
+    _skill_population_matrix: NDArray[np.int8] | csr_array
+    _rca_matrix: NDArray[np.float64] | csr_array
     _skill_sim_matrix: NDArray[np.float64]
     _use_sparse_matrices: bool
 
@@ -40,7 +41,7 @@ class SkillSimCalculatorV3(SkillSim):
     def get_skill_population_matrix(self) -> Any:
         return self._skill_population_matrix
 
-    def calc_rca_matrix(self) -> NDArray[np.float64]:
+    def calc_rca_matrix(self) -> NDArray[np.float64] | csr_array:
         """Computes the Revealed Comparative Advantage (RCA) matrix, where every row is a job advert (or more
         generically a skill group), every column is a skill and every element is RCA(job, skill).
 
@@ -78,20 +79,30 @@ class SkillSimCalculatorV3(SkillSim):
         if self._rca_matrix is None:
             self.calc_rca_matrix()
 
-        effective_use_matrix = xp.where(self._rca_matrix >= 1.0, 1.0, 0.0)
+        effective_use_matrix = None
 
-        skill_joint_freq_matrix = xp.matmul(
-            effective_use_matrix.T, effective_use_matrix
-        )
+        if self._use_sparse_matrices:
+            effective_use_matrix = copy.deepcopy(self._rca_matrix)
+            effective_use_matrix.data = (effective_use_matrix.data >= 1.0).astype(float)
+        else:
+            effective_use_matrix = xp.where(self._rca_matrix >= 1.0, 1.0, 0.0)
 
-        skill_effective_freq_vector = xp.diag(skill_joint_freq_matrix)
+        skill_joint_freq_matrix = effective_use_matrix.T @ effective_use_matrix
+
+        skill_effective_freq_vector = (
+            skill_joint_freq_matrix.diagonal()
+        )  # will be of type ndarray
 
         q1 = xp.tile(skill_effective_freq_vector, (len(skill_effective_freq_vector), 1))
         q2 = q1.T
 
         antecedent_matrix = xp.maximum(q1, q2)
 
-        self._skill_sim_matrix = skill_joint_freq_matrix / antecedent_matrix
+        self._skill_sim_matrix = (
+            skill_joint_freq_matrix / csr_array(antecedent_matrix)
+            if self._use_sparse_matrices
+            else skill_joint_freq_matrix / antecedent_matrix
+        )
 
     def get_skill_sim_matrix(self):
         return self._skill_sim_matrix
@@ -112,15 +123,22 @@ class SkillSimCalculatorV3(SkillSim):
             NDArray[np.int64]: 1D binary vector of size equal to the number of the number of unique skills.
         """
 
-        skill_vector = xp.clip(
-            xp.sum(self._skill_population_matrix[population_subset.indexes], axis=0),
+        skill_population_matrix_subset = self._skill_population_matrix[
+            population_subset.indexes
+        ]
+
+        if self._use_sparse_matrices:
+            skill_population_matrix_subset = skill_population_matrix_subset.toarray()
+
+        return xp.clip(
+            xp.sum(skill_population_matrix_subset, axis=0),
             None,
             1,
         )
 
-        return skill_vector
-
-    def skill_weight_vector(self, population_subset: MatrixSubsetIndexes):
+    def skill_weight_vector(
+        self, population_subset: MatrixSubsetIndexes
+    ) -> NDArray[np.float64]:
         """Computes the skill set weight vector, where each element is the weight of a skill in a skill set (0
         when the skill is not present). This vector is of size of the number of unique skills.
 
@@ -130,6 +148,12 @@ class SkillSimCalculatorV3(SkillSim):
         Returns:
             _type_: 1D vector of size equal to the number of the number of unique skills.
         """
+
+        if self._use_sparse_matrices:
+            return (
+                self.skill_set_one_hot_vector(population_subset)
+                * self._rca_matrix.tocsr()[population_subset.indexes]
+            ).sum(axis=0) / len(population_subset)
 
         return xp.sum(
             self.skill_set_one_hot_vector(population_subset)
