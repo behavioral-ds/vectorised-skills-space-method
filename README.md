@@ -49,16 +49,39 @@ As such, this report outlines and explains a method for implementing the Skills 
 
 ### Running from Source
 
+First run the following commands to clone this repository on your machine:
+
 ```bash
 git init
 git clone <github-link>
 cd skill-similarity
 ```
 
-If you wish to install `nvidia_requirements` read the callout in [the Dependencies section](#dependencies).
+Create a virtual environment to run this project:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+Then install the necessary packages for your platform:
 
 ```bash
 pip install -r <platform-option>_requirements.txt
+```
+
+If you wish to install `nvidia_requirements` read the callout in [the Dependencies section](#dependencies).
+
+Finally, run the `build.py` file by running:
+
+```bash
+python build.py
+```
+
+When you wish to stop using the virtual environment created for this project, run:
+
+```bash
+deactivate
 ```
 
 ## Example VSSM Usage
