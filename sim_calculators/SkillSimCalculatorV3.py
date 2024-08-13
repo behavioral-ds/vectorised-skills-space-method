@@ -2,6 +2,7 @@ from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
+from scipy.sparse import csr_array
 
 from sim_calculators.SkillSim import SkillSim
 from entities import SkillGroup
@@ -18,14 +19,23 @@ class SkillSimCalculatorV3(SkillSim):
     """
 
     _skill_population_matrix: NDArray[np.int8]
-
     _rca_matrix: NDArray[np.float64]
     _skill_sim_matrix: NDArray[np.float64]
+    _use_sparse_matrices: bool
 
-    def __init__(self, skill_population: SkillPopulation | SkillGroup):
-        self._skill_population_matrix = xp.asarray(skill_population.matrix)
+    def __init__(
+        self,
+        skill_population: SkillPopulation | SkillGroup,
+        use_sparse_matrices: bool = False,
+    ):
+        self._skill_population_matrix = (
+            csr_array(skill_population.matrix)
+            if use_sparse_matrices
+            else xp.asarray(skill_population.matrix)
+        )
         self._rca_matrix = None
         self._skill_sim_matrix = None
+        self._use_sparse_matrices = use_sparse_matrices
 
     def get_skill_population_matrix(self) -> Any:
         return self._skill_population_matrix
