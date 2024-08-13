@@ -191,6 +191,66 @@ class TestSkillSimCalculators(unittest.TestCase):
                 # TODO: Update v2 to use numpy floats so they produce exactly equal floats
                 self.assertAlmostEqual(v2_result, v3_result, 6)
 
+    def test_sss_v3_with_v3_sparse(self):
+        num_occupations = 90
+        num_skills = 40
+
+        print("Skill Set Similarity Test (V3 & V3 Sparse)")
+
+        for test_num in range(1, 6):
+            occ_to_skills = get_random_occ_to_skills(
+                num_occupations * test_num, num_skills * test_num
+            )
+
+            skill_group = SkillGroup(occ_to_skills)
+            skill_population = SkillPopulation(skill_group_skills=occ_to_skills)
+
+            job_population = get_job_population(skill_group)
+
+            print(
+                f"Test {test_num}: Occupations = {num_occupations * test_num}, Jobs = {len(job_population)}, Skills = {num_skills * test_num}"
+            )
+
+            skill_sim_calc_1 = SkillSimCalculatorV3(skill_population)
+            skill_sim_calc_2 = SkillSimCalculatorV3(
+                skill_population, use_sparse_matrices=True
+            )
+
+            start_index = random.randint(0, len(job_population) - 2)
+            end_index = random.randint(start_index + 1, len(job_population) - 1)
+
+            matrix_subset_1 = MatrixSubsetIndexes((start_index, end_index))
+            matrix_subset_2 = MatrixSubsetIndexes(
+                list(
+                    set(
+                        [
+                            random.randint(0, len(job_population) - 1)
+                            for _ in range(random.randint(1, len(job_population)))
+                        ]
+                    )
+                )
+            )
+
+            start = time.time()
+            v3_result = skill_sim_calc_1.skill_set_similarity(
+                matrix_subset_1, matrix_subset_2
+            )
+            end = time.time()
+            v3_time = round((end - start) * 1000, 2)
+
+            start = time.time()
+            v3_sparse_result = skill_sim_calc_2.skill_set_similarity(
+                matrix_subset_1, matrix_subset_2
+            )
+            end = time.time()
+            v3_sparse_time = round((end - start) * 1000, 2)
+
+            print("V3 Execution Time:", v3_time, "milliseconds")
+            print("V3 Sparse Execution Time:", v3_sparse_time, "milliseconds")
+
+            with self.subTest():
+                self.assertAlmostEqual(v3_result, v3_sparse_result, 6)
+
 
 if __name__ == "__main__":
     unittest.main()
