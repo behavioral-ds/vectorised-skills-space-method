@@ -2,9 +2,7 @@ import random
 import copy
 from uuid import uuid4
 
-from entities.SkillGroup import SkillGroup
-from entities.SkillPopulation import SkillPopulation
-from entities.SkillPopulationOld import SkillPopulationOld
+from entities import SkillPopulation, SkillPopulationDeprecated
 
 
 def get_random_occ_to_skills(
@@ -41,8 +39,8 @@ def get_random_occ_to_skills(
 def get_random_skill_group(
     num_occupations=15,
     num_skills=10,
-) -> SkillGroup:
-    return SkillGroup(get_random_occ_to_skills(num_occupations, num_skills))
+) -> SkillPopulationDeprecated:
+    return SkillPopulationDeprecated(get_random_occ_to_skills(num_occupations, num_skills))
 
 
 def get_random_skill_population(

@@ -6,7 +6,7 @@ from numpy.typing import NDArray
 from scipy.sparse import csr_array
 
 from sim_calculators.SkillSim import SkillSim
-from entities import SkillGroup
+from entities import SkillPopulationDeprecated
 from entities import SkillPopulation
 from utils import MatrixSubsetIndexes, xp
 
@@ -26,7 +26,7 @@ class SkillSimCalculatorV3(SkillSim):
 
     def __init__(
         self,
-        skill_population: SkillPopulation | SkillGroup,
+        skill_population: SkillPopulation | SkillPopulationDeprecated,
         use_sparse_matrices: bool = False,
     ):
         self._skill_population_matrix = (

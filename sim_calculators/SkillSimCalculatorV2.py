@@ -5,19 +5,19 @@ import numpy as np
 from tqdm import tqdm
 
 from sim_calculators import SkillSim
-from entities import SkillGroup
+from entities import SkillPopulationDeprecated
 from utils import MatrixSubsetIndexes
 
 
 class SkillSimCalculatorV2(SkillSim):
-    skill_group: SkillGroup
+    skill_group: SkillPopulationDeprecated
     cooccurrence_matrix: np.ndarray[Any, np.dtype[np.int8]] | None
     num_skills_in_job: dict[int, int]
     num_jobs_with_skill: dict[int, int]
     num_skills: int
     rca_memo: dict[tuple[int, int], float]
 
-    def __init__(self, skill_group: SkillGroup):
+    def __init__(self, skill_group: SkillPopulationDeprecated):
         self.skill_group = skill_group
         self.cooccurrence_matrix = None
         self.num_skills_in_job = {}

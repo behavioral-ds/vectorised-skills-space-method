@@ -3,7 +3,7 @@ from typing import Any
 import numpy as np
 
 
-class SkillGroup:
+class SkillPopulationDeprecated:
     matrix: np.ndarray[Any, np.dtype[np.int8]]
     skill_group_names: list[str]
     skill_names: list[str]

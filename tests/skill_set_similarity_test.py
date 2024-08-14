@@ -9,7 +9,7 @@ from tests.random_data.get_random_skills import (
     get_random_occ_to_skills,
 )
 from utils import MatrixSubsetIndexes, get_job_population, xp
-from entities import SkillGroup, SkillPopulation
+from entities import SkillPopulationDeprecated, SkillPopulation
 from sim_calculators import (
     SkillSimCalculatorBaseline,
     SkillSimCalculatorV2,
@@ -143,7 +143,7 @@ class TestSkillSimCalculators(unittest.TestCase):
                 num_occupations * test_num, num_skills * test_num
             )
 
-            skill_group = SkillGroup(occ_to_skills)
+            skill_group = SkillPopulationDeprecated(occ_to_skills)
             skill_population = SkillPopulation(skill_group_skills=occ_to_skills)
 
             job_population = get_job_population(skill_group)
@@ -202,7 +202,7 @@ class TestSkillSimCalculators(unittest.TestCase):
                 num_occupations * test_num, num_skills * test_num
             )
 
-            skill_group = SkillGroup(occ_to_skills)
+            skill_group = SkillPopulationDeprecated(occ_to_skills)
             skill_population = SkillPopulation(skill_group_skills=occ_to_skills)
 
             job_population = get_job_population(skill_group)

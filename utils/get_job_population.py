@@ -1,8 +1,8 @@
-from entities import SkillGroup
+from entities import SkillPopulationDeprecated
 from entities import Job, Skill
 
 
-def get_job_population(skill_group: SkillGroup) -> list[Job]:
+def get_job_population(skill_group: SkillPopulationDeprecated) -> list[Job]:
     job_population = []
 
     num_jobs, num_skills = skill_group.matrix.shape

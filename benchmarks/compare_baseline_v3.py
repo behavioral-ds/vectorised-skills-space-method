@@ -14,7 +14,7 @@ sys.path.insert(0, parent_dir)
 
 from tqdm import tqdm
 
-from entities import SkillGroup, SkillPopulation
+from entities import SkillPopulationDeprecated, SkillPopulation
 from tests import get_random_occ_to_skills
 from utils import get_job_population, MatrixSubsetIndexes
 from sim_calculators import (
@@ -83,7 +83,7 @@ for test_num in tqdm(range(1, 7)):
     else:
         occ_to_skills = test_occ_to_skills[test_num - 1]
 
-    skill_group = SkillGroup(occ_to_skills)
+    skill_group = SkillPopulationDeprecated(occ_to_skills)
     skill_population = SkillPopulation(skill_group_skills=occ_to_skills)
 
     job_population = get_job_population(skill_group)

@@ -1,5 +1,4 @@
 from .Job import Job
 from .Skill import Skill
-from .SkillGroup import SkillGroup
+from .SkillPopulationDeprecated import SkillPopulationDeprecated
 from .SkillPopulation import SkillPopulation
-from .SkillPopulationOld import SkillPopulationOld

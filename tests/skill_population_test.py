@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from entities import SkillGroup, SkillPopulation
+from entities import SkillPopulationDeprecated, SkillPopulation
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 from tests.random_data.get_random_skills import (
@@ -47,7 +47,7 @@ class TestSkillPopulation(unittest.TestCase):
         for _ in range(5):
             occ_to_skills = get_random_occ_to_skills()
 
-            skill_group = SkillGroup(occ_to_skills)
+            skill_group = SkillPopulationDeprecated(occ_to_skills)
             skill_population_1 = get_random_skill_population(True, occ_to_skills)
             skill_population_2 = get_random_skill_population(True, occ_to_skills)
 
