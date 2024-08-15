@@ -2,7 +2,7 @@ import os
 import json
 import pickle
 import shutil
-from typing import Optional, Callable, Type
+from typing import Callable, Type
 from dataclasses import dataclass
 
 import numpy as np
@@ -12,18 +12,8 @@ from tqdm import tqdm
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from utils.gzip import gzip_directory, uncompress_gzip
 
-
-@dataclass
-class SkillSetMetadata:
-    id: Optional[str] = None
-    id_source: Optional[str] = None
-    properties: Optional[dict] = None
-
-
-@dataclass
-class SkillGroup:
-    id: str
-    properties: Optional[dict] = None
+from entities.SkillGroup import SkillGroup
+from entities.SkillSetMetadata import SkillSetMetadata
 
 
 class SkillPopulation:
@@ -50,7 +40,7 @@ class SkillPopulation:
 
         if file_path is not None:
             uncompress_gzip(file_path)
-            
+
             file_path = file_path.replace(".tar.gz", "")
 
             self.matrix = np.load(f"{file_path}/matrix.npy")
@@ -149,7 +139,7 @@ class SkillPopulation:
             pickle.dump(self.skill_sets_metadata, f)
 
         gzip_directory(population_path, f"{file_path}/{output_name}.tar.gz")
-        
+
         shutil.rmtree(population_path)
 
     def get_matrix_subset_by_sg(
