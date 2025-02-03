@@ -17,7 +17,7 @@ from entities.SkillGroupMetadata import SkillGroupMetadata
 from entities.SkillSetMetadata import SkillSetMetadata
 
 class SkillPopulation:
-    matrix: NDArray[np.float64]  # matrix is a 2D array of only 1s and 0s
+    matrix: NDArray[np.int8]  # matrix is a 2D array of only 1s and 0s
     skill_group_subsets: list[
         tuple[SkillGroupMetadata, MatrixSubsetIndexes]
     ]  # skill is 1-M with rows in matrix
@@ -72,7 +72,7 @@ class SkillPopulation:
 
         num_unique_skills = len(self.skill_names)
 
-        job_skill_matrix = []
+        job_skill_matrix: list[list[int]] = []
         self.skill_group_subsets = []
         self.skill_sets_metadata = []
         row_index = 0
