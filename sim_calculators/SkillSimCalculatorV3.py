@@ -20,8 +20,8 @@ class SkillSimCalculatorV3(SkillSim):
     """
 
     _skill_population_matrix: NDArray[np.int8] | csr_array
-    _rca_matrix: NDArray[np.float64] | csr_array
-    _skill_sim_matrix: NDArray[np.float64]
+    _rca_matrix: NDArray[np.float64] | csr_array | None
+    _skill_sim_matrix: NDArray[np.float64] | None
     _use_sparse_matrices: bool
 
     def __init__(
@@ -41,7 +41,7 @@ class SkillSimCalculatorV3(SkillSim):
     def get_skill_population_matrix(self) -> Any:
         return self._skill_population_matrix
 
-    def calc_rca_matrix(self) -> NDArray[np.float64] | csr_array:
+    def calc_rca_matrix(self):
         """Computes the Revealed Comparative Advantage (RCA) matrix, where every row is a job advert (or more
         generically a skill group), every column is a skill and every element is RCA(job, skill).
 
@@ -49,15 +49,27 @@ class SkillSimCalculatorV3(SkillSim):
             NDArray[np.float64]: 2D matrix of size (number of job adverts) x (number of unique skills), where
             each element is RCA(job, skill).
         """
+        skill_population_matrix = self._skill_population_matrix
+        is_csr_array = isinstance(skill_population_matrix, csr_array)
 
-        num_skills_in_jobs = xp.sum(self._skill_population_matrix, axis=1)[
-            :, xp.newaxis
-        ]
+        num_skills_in_jobs = None
+        nums_jobs_with_skill = None
+        num_skills = None
 
-        nums_jobs_with_skill = xp.sum(self._skill_population_matrix, axis=0)
-        num_skills = xp.sum(self._skill_population_matrix)
+        if is_csr_array:
+            num_skills_in_jobs = skill_population_matrix.sum(axis=1)[
+                :, xp.newaxis
+            ]
+            nums_jobs_with_skill = skill_population_matrix.sum(axis=0)
+            num_skills = skill_population_matrix.sum()
+        else:
+            num_skills_in_jobs = xp.sum(skill_population_matrix, axis=1)[
+                :, xp.newaxis
+            ]
+            nums_jobs_with_skill = xp.sum(skill_population_matrix, axis=0)
+            num_skills = xp.sum(skill_population_matrix)
 
-        self._rca_matrix = (self._skill_population_matrix / num_skills_in_jobs) / (
+        self._rca_matrix = (skill_population_matrix / num_skills_in_jobs) / (
             nums_jobs_with_skill / num_skills
         )
 
