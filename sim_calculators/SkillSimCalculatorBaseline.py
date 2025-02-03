@@ -2,11 +2,10 @@ from itertools import chain
 
 from tqdm import tqdm
 
-from sim_calculators.SkillSim import SkillSim
 from entities import Skill, Job
 
 
-class SkillSimCalculatorBaseline(SkillSim):
+class SkillSimCalculatorBaseline:
     job_population: list[Job]
     skills: list[Skill] | None
 
