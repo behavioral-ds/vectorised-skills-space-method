@@ -3,7 +3,7 @@ from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy.sparse import csr_array
+from scipy.sparse import csr_array, coo_array
 
 from sim_calculators.SkillSim import SkillSim
 from entities import SkillPopulationDeprecated
@@ -20,7 +20,7 @@ class SkillSimCalculatorV3(SkillSim):
     """
 
     _skill_population_matrix: NDArray[np.int8] | csr_array
-    _rca_matrix: NDArray[np.float64] | csr_array | None
+    _rca_matrix: NDArray[np.float64] | coo_array | None
     _skill_sim_matrix: NDArray[np.float64] | None
     _use_sparse_matrices: bool
 
@@ -79,7 +79,7 @@ class SkillSimCalculatorV3(SkillSim):
     def set_rca_matrix(self, rca_matrix):
         self._rca_matrix = rca_matrix
 
-    def calc_skill_sim_matrix(self) -> NDArray[np.float64]:
+    def calc_skill_sim_matrix(self):
         """Computes the Skill Similarity matrix (theta matrix) using the computed RCA matrix. If the RCA matrix
         is None then it will compute it as part of the execution of this method.
 
@@ -91,9 +91,12 @@ class SkillSimCalculatorV3(SkillSim):
         if self._rca_matrix is None:
             self.calc_rca_matrix()
 
+        if self._rca_matrix is None:
+            return
+
         effective_use_matrix = None
 
-        if self._use_sparse_matrices:
+        if isinstance(self._rca_matrix, coo_array):
             effective_use_matrix = copy.deepcopy(self._rca_matrix)
             effective_use_matrix.data = (effective_use_matrix.data >= 1.0).astype(float)
         else:
