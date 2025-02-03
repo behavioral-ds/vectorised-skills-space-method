@@ -11,10 +11,10 @@ from utils import MatrixSubsetIndexes
 
 class SkillSimCalculatorV2(SkillSim):
     skill_group: SkillPopulationDeprecated
-    cooccurrence_matrix: np.ndarray[Any, np.dtype[np.int8]] | None
+    cooccurrence_matrix: np.ndarray[Any, np.dtype[np.float64]] | None
     num_skills_in_job: dict[int, int]
-    num_jobs_with_skill: dict[int, int]
-    num_skills: int
+    num_jobs_with_skill: dict[int, np.int8]
+    num_skills: np.int8
     rca_memo: dict[tuple[int, int], float]
 
     def __init__(self, skill_group: SkillPopulationDeprecated):
@@ -98,7 +98,7 @@ class SkillSimCalculatorV2(SkillSim):
     def rca_cooccurrence_by_skill_pair(self, skill_pair_index):
         return self.rca_cooccurrence(skill_pair_index[0], skill_pair_index[1])
 
-    def calc_cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.int8]]:
+    def calc_cooccurrence_matrix(self) -> np.ndarray[Any, np.dtype[np.float64]]:
         skill_pair_indexes = []
 
         _, num_skills = self.skill_group.matrix.shape
@@ -129,7 +129,7 @@ class SkillSimCalculatorV2(SkillSim):
             return cooccurrence_matrix
 
     def set_cooccurrence_matrix(
-        self, cooccurrence_matrix: np.ndarray[Any, np.dtype[np.int8]]
+        self, cooccurrence_matrix: np.ndarray[Any, np.dtype[np.float64]]
     ):
         self.cooccurrence_matrix = cooccurrence_matrix
 
@@ -176,7 +176,7 @@ class SkillSimCalculatorV2(SkillSim):
 
     def skill_set_vector(
         self, matrix_subset1: MatrixSubsetIndexes, matrix_subset2: MatrixSubsetIndexes
-    ) -> np.ndarray[Any, np.dtype[np.int8]]:
+    ) -> tuple[np.ndarray[Any, np.dtype[np.int8]], np.ndarray[Any, np.dtype[np.int8]]]:
         skill_vector1 = np.clip(
             np.sum(self.skill_group.matrix[matrix_subset1.indexes], axis=0), None, 1
         )
@@ -190,7 +190,7 @@ class SkillSimCalculatorV2(SkillSim):
         self,
         matrix_subset_1: MatrixSubsetIndexes,
         matrix_subset_2: MatrixSubsetIndexes,
-    ) -> float:
+    ) -> np.float64:
         skill_vector1, skill_vector2 = self.skill_set_vector(
             matrix_subset_1, matrix_subset_2
         )
