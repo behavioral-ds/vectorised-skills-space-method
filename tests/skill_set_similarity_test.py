@@ -96,9 +96,8 @@ class TestSkillSimCalculators(unittest.TestCase):
             print("V2 Execution Time:", v2_time, "milliseconds")
 
             with self.subTest():
-                # TODO: Update baseline and v2 to use numpy floats so they produce exactly equal floats
                 self.assertLessEqual(
-                    abs(int(baseline_result * 100) - int(v2_result * 100)), 1
+                    abs(int(baseline_result * 100) - int(float(v2_result) * 100)), 1
                 )
 
     def test_skill_sim_matrix_v3(self):
@@ -138,7 +137,7 @@ class TestSkillSimCalculators(unittest.TestCase):
             print("V3 Execution Time:", v3_time, "milliseconds")
 
             with self.subTest():
-                self.assertTrue(xp.array_equal(v3_result, xp.asarray(v2_result)))
+                self.assertTrue(xp.array_equal(v3_result, xp.asarray(v2_result)) if v3_result is not None else False)
 
     def test_sss_v3_with_v2(self):
         num_occupations = 90
