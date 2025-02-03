@@ -3,6 +3,7 @@ from uuid import uuid4
 
 from entities.SkillGroup import SkillGroup
 
+
 def get_random_occ_to_skills(
     num_occupations=15, num_skills=10
 ) -> dict[str, list[list[str]]]:
@@ -32,5 +33,16 @@ def get_random_occ_to_skills(
 
     return rand_occ_to_jobs_skills
 
-def add_metadata_to_occ_skills(occ_to_skills: dict[str, list[list[str]]]) -> dict[str, SkillGroup]:
-    return {occupation: {"name": occupation, "skill_sets": [{"id": str(uuid4()), "skills": skill_set} for skill_set in skill_sets]} for (occupation, skill_sets) in occ_to_skills.items()}
+
+def add_metadata_to_occ_skills(
+    occ_to_skills: dict[str, list[list[str]]],
+) -> dict[str, SkillGroup]:
+    return {
+        occupation: {
+            "name": occupation,
+            "skill_sets": [
+                {"id": str(uuid4()), "skills": skill_set} for skill_set in skill_sets
+            ],
+        }
+        for (occupation, skill_sets) in occ_to_skills.items()
+    }

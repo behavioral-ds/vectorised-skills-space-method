@@ -33,7 +33,11 @@ class TestSkillSimCalculators(unittest.TestCase):
 
         calc_1.set_cooccurrence_matrix(cooccur_matrix_2)
 
-        self.assertTrue(np.array_equal(calc_1.cooccurrence_matrix, cooccur_matrix_2) if calc_1.cooccurrence_matrix is not None else False)
+        self.assertTrue(
+            np.array_equal(calc_1.cooccurrence_matrix, cooccur_matrix_2)
+            if calc_1.cooccurrence_matrix is not None
+            else False
+        )
 
     def test_sss_v2_with_baseline(self):
         num_occupations = 15
@@ -42,9 +46,11 @@ class TestSkillSimCalculators(unittest.TestCase):
         print("Skill Set Similarity Test (Baseline & V2)")
 
         for test_num in range(1, 6):
-            skill_group = SkillPopulationDeprecated(get_random_occ_to_skills(
-                num_occupations * test_num, num_skills * test_num
-            ))
+            skill_group = SkillPopulationDeprecated(
+                get_random_occ_to_skills(
+                    num_occupations * test_num, num_skills * test_num
+                )
+            )
             job_population = get_job_population(skill_group)
 
             print(
@@ -102,9 +108,11 @@ class TestSkillSimCalculators(unittest.TestCase):
         print("Skill Set Similarity Test (V2 & V3)")
 
         for test_num in range(1, 6):
-            skill_group = SkillPopulationDeprecated(get_random_occ_to_skills(
-                num_occupations * test_num, num_skills * test_num
-            ))
+            skill_group = SkillPopulationDeprecated(
+                get_random_occ_to_skills(
+                    num_occupations * test_num, num_skills * test_num
+                )
+            )
             job_population = get_job_population(skill_group)
 
             print(
@@ -144,7 +152,9 @@ class TestSkillSimCalculators(unittest.TestCase):
             )
 
             skill_group = SkillPopulationDeprecated(occ_to_skills)
-            skill_population = SkillPopulation(skill_group_skills=add_metadata_to_occ_skills(occ_to_skills))
+            skill_population = SkillPopulation(
+                skill_group_skills=add_metadata_to_occ_skills(occ_to_skills)
+            )
 
             job_population = get_job_population(skill_group)
 
@@ -203,7 +213,9 @@ class TestSkillSimCalculators(unittest.TestCase):
             )
 
             skill_group = SkillPopulationDeprecated(occ_to_skills)
-            skill_population = SkillPopulation(skill_group_skills=add_metadata_to_occ_skills(occ_to_skills))
+            skill_population = SkillPopulation(
+                skill_group_skills=add_metadata_to_occ_skills(occ_to_skills)
+            )
 
             job_population = get_job_population(skill_group)
 

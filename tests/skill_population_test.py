@@ -8,7 +8,7 @@ from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 from tests.random_data.get_random_skills import (
     get_random_occ_to_skills,
-    add_metadata_to_occ_skills
+    add_metadata_to_occ_skills,
 )
 
 
@@ -23,8 +23,8 @@ def remove_duplicates(input_list):
 
 
 def is_skill_group_subset_equal(
-    skill_group_subsets_1:  list[tuple[SkillGroupMetadata, MatrixSubsetIndexes]],
-    skill_group_subsets_2:  list[tuple[SkillGroupMetadata, MatrixSubsetIndexes]],
+    skill_group_subsets_1: list[tuple[SkillGroupMetadata, MatrixSubsetIndexes]],
+    skill_group_subsets_2: list[tuple[SkillGroupMetadata, MatrixSubsetIndexes]],
 ):
     is_equal = True
 

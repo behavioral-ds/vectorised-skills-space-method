@@ -16,6 +16,7 @@ from entities.SkillSet import SkillSet
 from entities.SkillGroupMetadata import SkillGroupMetadata
 from entities.SkillSetMetadata import SkillSetMetadata
 
+
 class SkillPopulation:
     matrix: NDArray[np.int8]  # matrix is a 2D array of only 1s and 0s
     skill_group_subsets: list[
@@ -117,7 +118,9 @@ class SkillPopulation:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        object.__setattr__(self, "matrix", None) # bypass type checking which self.matrix = None does not
+        object.__setattr__(
+            self, "matrix", None
+        )  # bypass type checking which self.matrix = None does not
         object.__setattr__(self, "skill_group_subsets", None)
         object.__setattr__(self, "skill_sets_metadata", None)
         object.__setattr__(self, "skill_names", None)
@@ -202,13 +205,16 @@ class SkillPopulation:
     def __get_skill_group_with_sets(
         self, skill_group_id: str, skill_group: SkillGroup
     ) -> tuple[SkillGroupMetadata, list[SkillSet]]:
-        skill_group_properties = {} if "properties" not in skill_group else skill_group["properties"]
+        skill_group_properties = (
+            {} if "properties" not in skill_group else skill_group["properties"]
+        )
 
         skill_group_metadata = SkillGroupMetadata(
             skill_group_id,
             {
                 "name": skill_group["name"],
-            } | skill_group_properties,
+            }
+            | skill_group_properties,
         )
 
         return (
@@ -220,11 +226,7 @@ class SkillPopulation:
         self, skill_set: SkillSet
     ) -> tuple[SkillSetMetadata | None, list[str]]:
         id = skill_set["id"]
-        id_source = (
-            skill_set["id_source"] if "id_source" in skill_set else None
-        )
-        properties = (
-            skill_set["properties"] if "properties" in skill_set else None
-        )
+        id_source = skill_set["id_source"] if "id_source" in skill_set else None
+        properties = skill_set["properties"] if "properties" in skill_set else None
 
         return SkillSetMetadata(id, id_source, properties), skill_set["skills"]

@@ -11,7 +11,7 @@ def uncompress_gzip(file_path: str):
     # Ensure the file has a .tar.gz extension
     if not file_path.endswith(".tar.gz"):
         raise ValueError("The file must have a .tar.gz extension")
-    
+
     dir_path = "/".join(file_path.split("/")[:-1])
 
     os.makedirs(dir_path, exist_ok=True)
