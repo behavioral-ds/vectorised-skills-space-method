@@ -137,7 +137,11 @@ class TestSkillSimCalculators(unittest.TestCase):
             print("V3 Execution Time:", v3_time, "milliseconds")
 
             with self.subTest():
-                self.assertTrue(xp.array_equal(v3_result, xp.asarray(v2_result)) if v3_result is not None else False)
+                self.assertTrue(
+                    xp.array_equal(v3_result, xp.asarray(v2_result))
+                    if v3_result is not None
+                    else False
+                )
 
     def test_sss_v3_with_v2(self):
         num_occupations = 90
