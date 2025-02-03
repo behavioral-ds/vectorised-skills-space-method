@@ -1,8 +1,7 @@
-from dataclasses import dataclass
-from typing import Optional
+from typing import TypedDict, NotRequired, Any
 
+from entities.SkillSet import SkillSet
 
-@dataclass
-class SkillGroup:
-    id: str
-    properties: Optional[dict] = None
+SkillGroup = TypedDict(
+    "SkillGroup", { "name": str, "skill_sets": list[SkillSet], "properties": NotRequired[dict[str, Any]] }
+)

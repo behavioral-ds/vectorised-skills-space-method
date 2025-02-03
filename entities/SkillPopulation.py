@@ -2,8 +2,7 @@ import os
 import json
 import pickle
 import shutil
-from typing import Callable, Type
-from dataclasses import dataclass
+from typing import Callable
 
 import numpy as np
 from numpy.typing import NDArray
@@ -13,13 +12,14 @@ from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 from utils.gzip import gzip_directory, uncompress_gzip
 
 from entities.SkillGroup import SkillGroup
+from entities.SkillSet import SkillSet
+from entities.SkillGroupMetadata import SkillGroupMetadata
 from entities.SkillSetMetadata import SkillSetMetadata
-
 
 class SkillPopulation:
     matrix: NDArray[np.float64]  # matrix is a 2D array of only 1s and 0s
     skill_group_subsets: list[
-        tuple[SkillGroup, MatrixSubsetIndexes]
+        tuple[SkillGroupMetadata, MatrixSubsetIndexes]
     ]  # skill is 1-M with rows in matrix
     skill_sets_metadata: list[SkillSetMetadata | None]
     skill_names: list[str]  # 1-1 for each matrix column
@@ -30,7 +30,7 @@ class SkillPopulation:
     def __init__(
         self,
         file_path: str | None = None,
-        skill_group_skills: dict[str, list[list[str]]] | None = None,
+        skill_group_skills: dict[str, SkillGroup] | None = None,
         skill_freq_threshold: int | None = 5,
     ):
         if file_path is None and skill_group_skills is None:
@@ -61,8 +61,11 @@ class SkillPopulation:
 
             return
 
+        if skill_group_skills is None:
+            return
+
         skill_names, removed_skills = self.__filter_skills_by_threshold(
-            skill_group_skills, skill_freq_threshold
+            skill_group_skills, skill_freq_threshold=5
         )
         self.skill_names = skill_names
         self.removed_skills = removed_skills
@@ -143,9 +146,9 @@ class SkillPopulation:
         shutil.rmtree(population_path)
 
     def get_matrix_subset_by_sg(
-        self, filter_func: Callable[[Type[SkillGroup]], bool]
+        self, filter_func: Callable[[SkillGroupMetadata], bool]
     ) -> MatrixSubsetIndexes:
-        matrix_subset = None
+        matrix_subset = MatrixSubsetIndexes()
 
         for skill_group, group_matrix_subset in self.skill_group_subsets:
             if filter_func(skill_group):
@@ -157,32 +160,28 @@ class SkillPopulation:
         return matrix_subset
 
     def get_matrix_subset_by_ss_meta(
-        self, filter_func: Callable[[Type[SkillSetMetadata]], bool]
+        self, filter_func: Callable[[SkillSetMetadata], bool]
     ) -> MatrixSubsetIndexes:
         indexes = []
 
         for i, skill_set_metadata in enumerate(self.skill_sets_metadata):
-            if filter_func(skill_set_metadata):
+            if skill_set_metadata is not None and filter_func(skill_set_metadata):
                 indexes.append(i)
 
         return MatrixSubsetIndexes(indexes)
 
     def __filter_skills_by_threshold(
         self,
-        skill_group_skills: dict[str, list[list[str]]],
-        skill_freq_threshold: int = 5,
-    ) -> tuple[list[str], list[str]]:
+        skill_group_skills: dict[str, SkillGroup],
+        skill_freq_threshold: int,
+    ) -> tuple[list[str], set[str]]:
         # counting number of occurrences for each skill
         skill_frequency: dict[str, int] = {}
 
         for skill_sets_data in tqdm(
             skill_group_skills.values(), desc="Removing Skills below Threshold"
         ):
-            skill_sets = (
-                skill_sets_data
-                if type(skill_sets_data) is list
-                else skill_sets_data["skill_sets"]
-            )
+            skill_sets = skill_sets_data["skill_sets"]
 
             for skill_set in skill_sets:
                 skills = skill_set if type(skill_set) is list else skill_set["skills"]
@@ -201,35 +200,31 @@ class SkillPopulation:
         return list(skill_frequency.keys()), removed_skills
 
     def __get_skill_group_with_sets(
-        self, skill_group_id: str, skill_group_data: list | dict
-    ) -> tuple[SkillGroup, list[list[str]]]:
-        if type(skill_group_data) is list:
-            return (SkillGroup(skill_group_id), skill_group_data)
+        self, skill_group_id: str, skill_group: SkillGroup
+    ) -> tuple[SkillGroupMetadata, list[SkillSet]]:
+        skill_group_properties = {} if "properties" not in skill_group else skill_group["properties"]
+
+        skill_group_metadata = SkillGroupMetadata(
+            skill_group_id,
+            {
+                "name": skill_group["name"],
+            } | skill_group_properties,
+        )
 
         return (
-            SkillGroup(
-                skill_group_id,
-                {
-                    key: value
-                    for key, value in skill_group_data.items()
-                    if key != "skill_sets"
-                },
-            ),
-            skill_group_data["skill_sets"],
+            skill_group_metadata,
+            skill_group["skill_sets"],
         )
 
     def __get_skill_set_with_metadata(
-        self, skill_set_data: list | dict
+        self, skill_set: SkillSet
     ) -> tuple[SkillSetMetadata | None, list[str]]:
-        if type(skill_set_data) is list:
-            return (None, skill_set_data)
-
-        id = skill_set_data["id"] if "id" in skill_set_data else None
+        id = skill_set["id"]
         id_source = (
-            skill_set_data["id_source"] if "id_source" in skill_set_data else None
+            skill_set["id_source"] if "id_source" in skill_set else None
         )
         properties = (
-            skill_set_data["properties"] if "properties" in skill_set_data else None
+            skill_set["properties"] if "properties" in skill_set else None
         )
 
-        return SkillSetMetadata(id, id_source, properties), skill_set_data["skills"]
+        return SkillSetMetadata(id, id_source, properties), skill_set["skills"]

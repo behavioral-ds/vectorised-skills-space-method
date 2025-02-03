@@ -2,13 +2,14 @@ import unittest
 
 import numpy as np
 
+from entities import SkillPopulationDeprecated
 from utils import get_skill_group_matrix, get_job_population
-from tests.random_data.get_random_skills import get_random_skill_group
+from tests.random_data.get_random_skills import get_random_occ_to_skills
 
 
 class TestSkillGroup(unittest.TestCase):
     def setUp(self):
-        self.skill_group = get_random_skill_group()
+        self.skill_group = SkillPopulationDeprecated(get_random_occ_to_skills())
         self.skill_names = self.skill_group.skill_names
         self.job_population = get_job_population(self.skill_group)
 

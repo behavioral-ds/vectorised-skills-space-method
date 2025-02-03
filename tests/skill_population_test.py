@@ -3,12 +3,12 @@ import unittest
 
 import numpy as np
 
-from entities import SkillPopulationDeprecated, SkillPopulation
+from entities import SkillGroupMetadata, SkillPopulation, SkillPopulationDeprecated
 from utils.MatrixSubsetIndexes import MatrixSubsetIndexes
 
 from tests.random_data.get_random_skills import (
     get_random_occ_to_skills,
-    get_random_skill_population,
+    add_metadata_to_occ_skills
 )
 
 
@@ -23,8 +23,8 @@ def remove_duplicates(input_list):
 
 
 def is_skill_group_subset_equal(
-    skill_group_subsets_1: MatrixSubsetIndexes,
-    skill_group_subsets_2: MatrixSubsetIndexes,
+    skill_group_subsets_1:  list[tuple[SkillGroupMetadata, MatrixSubsetIndexes]],
+    skill_group_subsets_2:  list[tuple[SkillGroupMetadata, MatrixSubsetIndexes]],
 ):
     is_equal = True
 
@@ -48,8 +48,11 @@ class TestSkillPopulation(unittest.TestCase):
             occ_to_skills = get_random_occ_to_skills()
 
             skill_group = SkillPopulationDeprecated(occ_to_skills)
-            skill_population_1 = get_random_skill_population(True, occ_to_skills)
-            skill_population_2 = get_random_skill_population(True, occ_to_skills)
+
+            occ_to_skills = add_metadata_to_occ_skills(occ_to_skills)
+
+            skill_population_1 = SkillPopulation(skill_group_skills=occ_to_skills)
+            skill_population_2 = SkillPopulation(skill_group_skills=occ_to_skills)
 
             with self.subTest():
                 self.assertTrue(
@@ -94,7 +97,7 @@ class TestSkillPopulation(unittest.TestCase):
                 )
 
     def test_context_manager(self):
-        occ_to_skills = get_random_occ_to_skills()
+        occ_to_skills = add_metadata_to_occ_skills(get_random_occ_to_skills())
 
         skill_population_1 = SkillPopulation(skill_group_skills=occ_to_skills)
 
@@ -131,7 +134,7 @@ class TestSkillPopulation(unittest.TestCase):
     def test_save_load(self):
         os.makedirs("./data", exist_ok=True)
 
-        occ_to_skills = get_random_occ_to_skills()
+        occ_to_skills = add_metadata_to_occ_skills(get_random_occ_to_skills())
         skill_population_1 = SkillPopulation(skill_group_skills=occ_to_skills)
         skill_population_1.save("./data", "skill_population")
 

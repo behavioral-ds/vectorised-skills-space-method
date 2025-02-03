@@ -1,2 +1,1 @@
-from tests.random_data.get_random_skills import get_random_skill_group
 from tests.random_data.get_random_skills import get_random_occ_to_skills

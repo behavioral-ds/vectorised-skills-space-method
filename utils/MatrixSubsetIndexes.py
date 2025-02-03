@@ -6,13 +6,14 @@ class MatrixSubsetIndexes:
 
     def __init__(
         self,
-        matrix_subset_slice: tuple[int, int] | list[int],
+        matrix_subset_slice: tuple[int, int] | list[int] = [],
     ):
         if type(matrix_subset_slice) is tuple:
             self.indexes = [
                 i for i in range(matrix_subset_slice[0], matrix_subset_slice[1] + 1)
             ]
-        else:
+
+        if type(matrix_subset_slice) is list:
             self.indexes = matrix_subset_slice
 
     def __len__(self):
