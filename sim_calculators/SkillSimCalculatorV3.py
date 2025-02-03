@@ -57,15 +57,11 @@ class SkillSimCalculatorV3(SkillSim):
         num_skills = None
 
         if is_csr_array:
-            num_skills_in_jobs = skill_population_matrix.sum(axis=1)[
-                :, xp.newaxis
-            ]
+            num_skills_in_jobs = skill_population_matrix.sum(axis=1)[:, xp.newaxis]
             nums_jobs_with_skill = skill_population_matrix.sum(axis=0)
             num_skills = skill_population_matrix.sum()
         else:
-            num_skills_in_jobs = xp.sum(skill_population_matrix, axis=1)[
-                :, xp.newaxis
-            ]
+            num_skills_in_jobs = xp.sum(skill_population_matrix, axis=1)[:, xp.newaxis]
             nums_jobs_with_skill = xp.sum(skill_population_matrix, axis=0)
             num_skills = xp.sum(skill_population_matrix)
 
@@ -142,11 +138,10 @@ class SkillSimCalculatorV3(SkillSim):
             population_subset.indexes
         ]
 
-        if self._use_sparse_matrices:
-            skill_population_matrix_subset = skill_population_matrix_subset.toarray()
-
         return xp.clip(
-            xp.sum(skill_population_matrix_subset, axis=0),
+            skill_population_matrix_subset.sum(axis=0)
+            if isinstance(skill_population_matrix_subset, csr_array)
+            else xp.sum(skill_population_matrix_subset, axis=0),
             None,
             1,
         )
@@ -164,11 +159,14 @@ class SkillSimCalculatorV3(SkillSim):
             _type_: 1D vector of size equal to the number of the number of unique skills.
         """
 
-        if self._use_sparse_matrices:
-            return (
-                self.skill_set_one_hot_vector(population_subset)
-                * self._rca_matrix.tocsr()[population_subset.indexes]
-            ).sum(axis=0) / len(population_subset)
+        if self._rca_matrix is None:
+            raise Exception("RCA matrix must be calculated first.")
+
+        if isinstance(self._rca_matrix, coo_array):
+            rca_matrix_subset = csr_array(self._rca_matrix.tocsr()[population_subset.indexes])
+            return (self.skill_set_one_hot_vector(population_subset) * rca_matrix_subset).sum(
+                axis=0
+            ) / len(population_subset)
 
         return xp.sum(
             self.skill_set_one_hot_vector(population_subset)
