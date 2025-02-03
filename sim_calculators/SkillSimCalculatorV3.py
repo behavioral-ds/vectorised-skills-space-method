@@ -88,6 +88,7 @@ class SkillSimCalculatorV3(SkillSim):
             self.calc_rca_matrix()
 
         if self._rca_matrix is None:
+            # will never reach here
             return
 
         effective_use_matrix = None
@@ -163,10 +164,12 @@ class SkillSimCalculatorV3(SkillSim):
             raise Exception("RCA matrix must be calculated first.")
 
         if isinstance(self._rca_matrix, coo_array):
-            rca_matrix_subset = csr_array(self._rca_matrix.tocsr()[population_subset.indexes])
-            return (self.skill_set_one_hot_vector(population_subset) * rca_matrix_subset).sum(
-                axis=0
-            ) / len(population_subset)
+            rca_matrix_subset = csr_array(
+                self._rca_matrix.tocsr()[population_subset.indexes]
+            )
+            return (
+                self.skill_set_one_hot_vector(population_subset) * rca_matrix_subset
+            ).sum(axis=0) / len(population_subset)
 
         return xp.sum(
             self.skill_set_one_hot_vector(population_subset)
@@ -201,6 +204,10 @@ class SkillSimCalculatorV3(SkillSim):
         if self._skill_sim_matrix is None:
             self.calc_skill_sim_matrix()
 
+        if self._skill_sim_matrix is None:
+            # will never reach here
+            raise Exception("Skill similarity matrix needs to be calculated first.")
+
         if population_subset_2 is None and custom_skill_weight_vector is None:
             raise Exception(
                 "A second matrix subset or custom skill weight vector needs to be provided. Both cannot be None."
@@ -210,11 +217,17 @@ class SkillSimCalculatorV3(SkillSim):
         # when the element-wise dot product is calculated with the skill sim matrix this means
         # skills that weren't included in the subset will be zeroed out and not count towards the sum
         skill_set_weight_vector_1 = self.skill_weight_vector(population_subset_1)
-        skill_set_weight_vector_2 = (
-            self.skill_weight_vector(population_subset_2)
-            if custom_skill_weight_vector is None
-            else custom_skill_weight_vector
-        )
+        skill_set_weight_vector_2 = None
+
+        if population_subset_2 is not None:
+            skill_set_weight_vector_2 = self.skill_weight_vector(population_subset_2)
+        else:
+            if custom_skill_weight_vector is not None:
+                skill_set_weight_vector_2 = custom_skill_weight_vector
+            else:
+                raise Exception(
+                    "A second matrix subset or custom skill weight vector needs to be provided. Both cannot be None."
+                )
 
         _, num_skills = self._skill_sim_matrix.shape
         skill_prod_weight_matrix = xp.ones((num_skills, num_skills))
@@ -256,6 +269,10 @@ class SkillSimCalculatorV3(SkillSim):
         ) = self.get_skill_weight_components(
             matrix_subset_1, matrix_subset_2, custom_skill_weight_vector
         )
+
+        if self._skill_sim_matrix is None:
+            # will never reach here
+            raise Exception("Skill similarity matrix needs to be calculated first.")
 
         return np.float64(
             xp.sum(
