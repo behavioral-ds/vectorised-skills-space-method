@@ -218,16 +218,16 @@ class SkillSimCalculatorV3(SkillSim):
 
     def skill_set_similarity(
         self,
-        population_subset_1: MatrixSubsetIndexes,
-        population_subset_2: MatrixSubsetIndexes | None,
+        matrix_subset_1: MatrixSubsetIndexes,
+        matrix_subset_2: MatrixSubsetIndexes | None,
         custom_skill_weight_vector: NDArray[np.float64] | None = None,
     ) -> np.float64:
         """Computes the Skill Set Similarity between job population subset 1 and 2 (alternatively this can be
             interpreted as the similarity score between skill set of the jobs of subset 1 and 2).
 
         Args:
-            population_subset_1 (MatrixSubsetIndexes): The 1st job population subset (or job sample set).
-            population_subset_2 (MatrixSubsetIndexes | None): The 2nd job population subset (or job sample set).
+            matrix_subset_1 (MatrixSubsetIndexes): The 1st job population subset (or job sample set).
+            matrix_subset_2 (MatrixSubsetIndexes | None): The 2nd job population subset (or job sample set).
             custom_skill_weight_vector (NDArray[np.float64] | None, optional): A custom weight vector that will
             replace the weight vector of the 2nd job population subset. Defaults to None.
 
@@ -241,7 +241,7 @@ class SkillSimCalculatorV3(SkillSim):
             skill_set_weight_vector_2,
             skill_prod_weight_matrix,
         ) = self.get_skill_weight_components(
-            population_subset_1, population_subset_2, custom_skill_weight_vector
+            matrix_subset_1, matrix_subset_2, custom_skill_weight_vector
         )
 
         return np.float64(
