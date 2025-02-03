@@ -117,11 +117,11 @@ class SkillPopulation:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.matrix = None
-        self.skill_group_subsets = None
-        self.skill_sets_metadata = None
-        self.skill_names = None
-        self.removed_skills = None
+        object.__setattr__(self, "matrix", None) # bypass type checking which self.matrix = None does not
+        object.__setattr__(self, "skill_group_subsets", None)
+        object.__setattr__(self, "skill_sets_metadata", None)
+        object.__setattr__(self, "skill_names", None)
+        object.__setattr__(self, "removed_skills", None)
 
     def save(self, file_path: str, output_name: str):
         population_path = f"{file_path}/{output_name}"
